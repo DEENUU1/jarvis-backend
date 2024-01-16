@@ -1,5 +1,6 @@
 import os
-from typing import Literal, Optional, List, ClassVar
+from typing import Literal, Optional, ClassVar
+
 from dotenv import load_dotenv
 from pydantic_settings import BaseSettings
 
@@ -16,6 +17,7 @@ class Settings(BaseSettings):
 
     # AI
     MODELS: ClassVar = os.getenv("MODELS").split(",")
+    OPENAI_KEY: str = os.getenv("OPENAI_KEY")
 
 
 settings = Settings()

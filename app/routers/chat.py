@@ -4,7 +4,7 @@ from fastapi import APIRouter
 
 from ai.sql_chat_history import CustomSQLChatMessageHistory
 from config.settings import settings
-from schemas.model import Model
+
 
 router = APIRouter(
     prefix="/chat",
