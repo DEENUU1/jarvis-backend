@@ -1,6 +1,5 @@
 import os
-from typing import Literal, Optional
-
+from typing import Literal, Optional, List, ClassVar
 from dotenv import load_dotenv
 from pydantic_settings import BaseSettings
 
@@ -14,6 +13,9 @@ class Settings(BaseSettings):
 
     # SQLite
     SQLITE_CONNECTION_STRING: Optional[str] = os.getenv("SQLITE_CONNECTION_STRING")
+
+    # AI
+    MODELS: ClassVar = os.getenv("MODELS").split(",")
 
 
 settings = Settings()
