@@ -1,8 +1,8 @@
 from langchain.agents import AgentExecutor, initialize_agent, AgentType
 from langchain_community.utilities.duckduckgo_search import DuckDuckGoSearchAPIWrapper
 from langchain_core.tools import Tool
-from llm import get_chat_openai
-from memory import setup_memory
+from .llm import get_chat_openai
+from .memory import setup_memory
 
 
 def setup_agent(session_id: str, model: str) -> AgentExecutor:

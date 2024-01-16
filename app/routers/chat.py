@@ -1,9 +1,10 @@
 from typing import List
 
 from fastapi import APIRouter
-
+from schemas.message import Message
 from ai.sql_chat_history import CustomSQLChatMessageHistory
 from config.settings import settings
+from ai.agent import setup_agent
 
 
 router = APIRouter(
@@ -34,3 +35,14 @@ router = APIRouter(
 def get_model_list():
     models = settings.MODELS
     return models
+
+
+@router.post("")
+def send_message(data: Message):
+    agent_executor = setup_agent(
+        session_id=data.session_id,
+        model=data.model
+    )
+
+    agent_executor.invoke({"input": data.message})
+    return {"status": "ok"}
