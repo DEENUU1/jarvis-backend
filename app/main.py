@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from config.settings import settings
-from routers import health
+from routers import health, chat
 
 # from config.database import engine, Base
 # Base.metadata.create_all(bind=engine)
@@ -12,3 +12,4 @@ app = FastAPI(
 )
 
 app.include_router(health.router)
+app.include_router(chat.router)
