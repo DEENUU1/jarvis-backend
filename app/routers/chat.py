@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from services.sql_chat_history import CustomSQLChatMessageHistory
+from ai.sql_chat_history import CustomSQLChatMessageHistory
 from config.settings import settings
 
 router = APIRouter(
@@ -11,7 +11,7 @@ router = APIRouter(
 @router.get("", tags=["session_list"])
 def get_session_list():
     unique_session = CustomSQLChatMessageHistory(
-        session_id="None", # Session_id is not required here
+        session_id="None",  # Session_id is not required here
         connection_string=settings.SQLITE_CONNECTION_STRING,
     ).unique_session_ids()
     print(unique_session)
