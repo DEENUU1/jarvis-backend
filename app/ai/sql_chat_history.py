@@ -18,7 +18,7 @@ class CustomSQLChatMessageHistory(SQLChatMessageHistory):
             )
             return [row[0] for row in result]
 
-    def get_messages_by_session_id(self, target_session_id: str) -> List[BaseMessage]:
+    def get_messages_by_session_id(self) -> List[BaseMessage]:
         """
         Retrieve messages for a specific session ID
         """
@@ -27,7 +27,7 @@ class CustomSQLChatMessageHistory(SQLChatMessageHistory):
                 session.query(self.sql_model_class)
                 .filter(
                     getattr(self.sql_model_class, self.session_id_field_name)
-                    == target_session_id
+                    == self.session_id
                 )
                 .order_by(self.sql_model_class.id.asc())
             )
@@ -36,14 +36,14 @@ class CustomSQLChatMessageHistory(SQLChatMessageHistory):
                 messages.append(self.converter.from_sql_model(record))
             return messages
 
-    def create_conversation(self, session_id: str):
+    def create_conversation(self):
         """
         Create Message object with generated session_id
         """
 
-        empty_message = BaseMessage(content="", type="")
+        empty_message = BaseMessage(content=", type=""")
         with self.Session() as session:
-            empty_sql_model = self.converter.to_sql_model(empty_message, session_id)
+            empty_sql_model = self.converter.to_sql_model(empty_message, self.session_id)
             session.add(empty_sql_model)
             session.commit()
 
