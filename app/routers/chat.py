@@ -70,3 +70,13 @@ def get_messages(session_id: str):
 
     messages = CustomSQLChatMessageHistory(session_id=session_id).get_messages_by_session_id()
     return messages
+
+
+@router.delete("/{session_id}")
+def delete_conversation(session_id: str):
+    """
+    Delete all messages for specified session_id
+    """
+
+    CustomSQLChatMessageHistory(session_id=session_id).delete_conversation()
+    return {"status": "ok"}

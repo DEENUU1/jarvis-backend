@@ -64,8 +64,22 @@ class CustomSQLChatMessageHistory(SQLChatMessageHistory):
         Create Message object with generated session_id
         """
 
-        empty_message = BaseMessage(content=", type=""")
+        # Because message field is required the content is an empty string and type is system
+        # Later in conversation user input is a 'human' type and AI response is 'ai' type
+        empty_message = BaseMessage(content="", type="system")
         with self.Session() as session:
             empty_sql_model = self.converter.to_sql_model(empty_message, self.session_id)
             session.add(empty_sql_model)
+            session.commit()
+
+    def delete_conversation(self):
+        """
+        Delete all Message objects with specified session_id
+        """
+
+        with self.Session() as session:
+            session.query(self.sql_model_class).filter(
+                getattr(self.sql_model_class, self.session_id_field_name)
+                == self.session_id
+            ).delete()
             session.commit()
