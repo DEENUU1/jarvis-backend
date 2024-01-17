@@ -1,12 +1,12 @@
 from typing import List, Optional, Dict
 
 from fastapi import APIRouter
-from schemas.message import Message
+
+from ai.agent import setup_agent
 from ai.sql_chat_history import CustomSQLChatMessageHistory
 from config.settings import settings
-from ai.agent import setup_agent
+from schemas.message import Message
 from utils.session import generate_unique_session
-
 
 router = APIRouter(
     prefix="/chat",
@@ -46,7 +46,8 @@ def send_message(session_id: str, data: Message) -> Dict[str, str]:
         model=data.model
     )
 
-    agent_executor.invoke({"input": data.message})
+    # agent_executor.invoke({"input": data.message})
+    agent_executor.run(data.message)
     return {"status": "ok"}
 
 

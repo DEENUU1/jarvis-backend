@@ -19,5 +19,10 @@ class Settings(BaseSettings):
     MODELS: ClassVar = os.getenv("MODELS").split(",")
     OPENAI_KEY: str = os.getenv("OPENAI_KEY")
 
+    # USER
+    FIRST_NAME: str = os.getenv("FIRST_NAME")
+    LAST_NAME: str = os.getenv("LAST_NAME")
+    LOCATION: str = os.getenv("CITY")
+
 
 settings = Settings()
