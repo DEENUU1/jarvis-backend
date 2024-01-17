@@ -6,9 +6,7 @@ from config.settings import settings
 
 
 def setup_memory(session_id: str):
-    chat_message_history = CustomSQLChatMessageHistory(
-        session_id=session_id, connection_string=settings.SQLITE_CONNECTION_STRING,
-    )
+    chat_message_history = CustomSQLChatMessageHistory(session_id=session_id)
 
     agent_kwargs = {
         "extra_prompt_messages": [MessagesPlaceholder(variable_name="history")],

@@ -6,7 +6,6 @@ from ai.sql_chat_history import CustomSQLChatMessageHistory
 from config.settings import settings
 from ai.agent import setup_agent
 from utils.session import generate_unique_session
-from langchain_core.messages import BaseMessage
 
 
 router = APIRouter(
@@ -21,10 +20,8 @@ def get_session_list() -> List[Optional[str]]:
     Get list of unique session_id
     """
 
-    unique_session = CustomSQLChatMessageHistory(
-        session_id="None",  # Session_id is not required here
-        connection_string=settings.SQLITE_CONNECTION_STRING,
-    ).unique_session_ids()
+    # Session_id is not required here
+    unique_session = CustomSQLChatMessageHistory(session_id="None").unique_session_ids()
     return unique_session
 
 
@@ -60,10 +57,7 @@ def start_new_conversation() -> Dict[str, str]:
     """
 
     session_id = generate_unique_session()
-    CustomSQLChatMessageHistory(
-        session_id=session_id,
-        connection_string=settings.SQLITE_CONNECTION_STRING
-    ).create_conversation()
+    CustomSQLChatMessageHistory(session_id=session_id).create_conversation()
 
     return {"session_id": session_id}
 
@@ -74,8 +68,5 @@ def get_messages(session_id: str):
     Get all messages for specified session_id
     """
 
-    messages = CustomSQLChatMessageHistory(
-        session_id=session_id,
-        connection_string=settings.SQLITE_CONNECTION_STRING,
-    ).get_messages_by_session_id()
+    messages = CustomSQLChatMessageHistory(session_id=session_id).get_messages_by_session_id()
     return messages

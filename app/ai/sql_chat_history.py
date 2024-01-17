@@ -1,10 +1,33 @@
-from typing import List
+from typing import List, Optional
 
 from langchain_community.chat_message_histories import SQLChatMessageHistory
+from langchain_community.chat_message_histories.sql import BaseMessageConverter
 from langchain_core.messages import BaseMessage
+from config.settings import settings
 
 
 class CustomSQLChatMessageHistory(SQLChatMessageHistory):
+    """
+    This class override SQLChatMessageHistory class from Langchain library
+    """
+
+    def __init__(
+            self,
+            session_id: str,
+            table_name: str = "message_store",
+            session_id_field_name: str = "session_id",
+            custom_message_converter: Optional[BaseMessageConverter] = None,
+    ):
+        # Hard code the connection_string
+        connection_string = settings.SQLITE_CONNECTION_STRING
+
+        super().__init__(
+            session_id=session_id,
+            connection_string=connection_string,
+            table_name=table_name,
+            session_id_field_name=session_id_field_name,
+            custom_message_converter=custom_message_converter,
+        )
 
     def unique_session_ids(self) -> List[str]:
         """
@@ -46,4 +69,3 @@ class CustomSQLChatMessageHistory(SQLChatMessageHistory):
             empty_sql_model = self.converter.to_sql_model(empty_message, self.session_id)
             session.add(empty_sql_model)
             session.commit()
-
