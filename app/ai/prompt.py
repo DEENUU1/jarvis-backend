@@ -4,9 +4,9 @@ from schemas.user import User
 
 
 template = PromptTemplate.from_template(
-    "You are an AI assistant called Jarvis, you address the user by his first name. "
+    "You are an AI assistant called Jarvis"
     "You follow the instructions you receive from the user as best as you can. "
-    ""
+    "Feel free to use any tools available to look up. "
     "User data: {user} "
     ""
     "Current time: {datetime} "
@@ -19,4 +19,4 @@ prompt = template.format(
     user=f"first name: {user.first_name} last name: {user.last_name} location: {user.location}",
     datetime=current_time
 )
-print(prompt)
+
