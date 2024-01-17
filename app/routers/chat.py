@@ -58,3 +58,14 @@ def start_new_conversation():
     ).create_conversation(session_id)
 
     return {"session_id": session_id}
+
+
+@router.get("/{session_id}")
+def get_messages(session_id: str):
+    messages = CustomSQLChatMessageHistory(
+        session_id=session_id,
+        connection_string=settings.SQLITE_CONNECTION_STRING,
+    ).get_messages_by_session_id(
+        target_session_id=session_id
+    )
+    return messages
