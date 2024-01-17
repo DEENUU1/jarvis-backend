@@ -5,6 +5,7 @@ from schemas.message import Message
 from ai.sql_chat_history import CustomSQLChatMessageHistory
 from config.settings import settings
 from ai.agent import setup_agent
+from utils.session import generate_unique_session
 
 
 router = APIRouter(
@@ -37,12 +38,23 @@ def get_model_list():
     return models
 
 
-@router.post("")
-def send_message(data: Message):
+@router.post("/{session_id}")
+def send_message(session_id: str,data: Message):
     agent_executor = setup_agent(
-        session_id=data.session_id,
+        session_id=session_id,
         model=data.model
     )
 
     agent_executor.invoke({"input": data.message})
     return {"status": "ok"}
+
+
+@router.post("")
+def start_new_conversation():
+    session_id = generate_unique_session()
+    CustomSQLChatMessageHistory(
+        session_id=session_id,
+        connection_string=settings.SQLITE_CONNECTION_STRING
+    ).create_conversation(session_id)
+
+    return {"session_id": session_id}
