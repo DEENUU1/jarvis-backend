@@ -11,5 +11,5 @@ app = FastAPI(
     title=settings.TITLE,
 )
 
-# app.include_router(health.router)
+app.include_router(health.router)
 app.include_router(chat.router)
