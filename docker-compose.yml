@@ -7,11 +7,11 @@ services:
             context: .
             dockerfile: ./Dockerfile
         container_name: jarvis-api
-        command: uvicorn main:app --host 0.0.0.0 --port 80
+        command: uvicorn main:app --host 0.0.0.0 --port 81
         volumes:
           - ./app:/app
         ports:
-            - "80:80"
+            - "81:81"
         env_file:
             - .env
         restart: always
