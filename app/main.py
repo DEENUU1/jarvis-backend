@@ -1,5 +1,8 @@
+import os
+
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
+
 from config.settings import settings
 from routers import health, chat, media
 
@@ -24,3 +27,14 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.on_event("startup")
+def startup_event():
+    """
+    On app start check if 'media' directory exists and if not create it
+    """
+    if not os.path.exists("media"):
+        print("Create media directory")
+        os.mkdir("media")
+        print("Media directory created")
