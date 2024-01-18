@@ -7,6 +7,8 @@ from langchain_core.tools import Tool
 from .llm import get_chat_openai
 from .memory import setup_memory
 from .prompt import prompt
+from langchain.chains import RetrievalQA
+from .vector import get_chroma_db
 
 
 def setup_agent(session_id: str, model: str):
@@ -15,11 +17,22 @@ def setup_agent(session_id: str, model: str):
     # _, memory = setup_memory(session_id=session_id)
     memory = setup_memory(session_id=session_id)
 
+    personal_data = RetrievalQA.from_chain_type(
+        llm=llm,
+        chain_type="stuff",
+        retriever=get_chroma_db().as_retriever,
+    )
+
     tools = [
         Tool(
             name="Search",
             func=duckduck_search.run,
             description="useful for when you need to answer questions about current events. You should ask targeted questions"
+        ),
+        Tool(
+            name="Personal Data",
+            func=personal_data.run,
+            description="Useful for when you need to answer questions about personal data or user's stuff. Use it if use don't know answer"
         )
     ]
 

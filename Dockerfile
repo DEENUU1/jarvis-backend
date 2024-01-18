@@ -11,6 +11,7 @@ RUN apt-get update && \
 COPY requirements.txt .
 
 RUN pip install -r requirements.txt
+RUN pip install chromadb # doesn't work on windows which i use
 
 RUN addgroup --system app && adduser --system --group app
 
