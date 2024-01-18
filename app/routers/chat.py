@@ -7,6 +7,7 @@ from ai.sql_chat_history import CustomSQLChatMessageHistory
 from config.settings import settings
 from schemas.message import Message
 from utils.session import generate_unique_session
+from fastapi.responses import JSONResponse
 
 router = APIRouter(
     prefix="/chat",
@@ -15,14 +16,14 @@ router = APIRouter(
 
 
 @router.get("")
-def get_session_list() -> List[Optional[str]]:
+def get_session_list() -> JSONResponse:
     """
     Get list of unique session_id
     """
 
     # Session_id is not required here
     unique_session = CustomSQLChatMessageHistory(session_id="None").unique_session_ids()
-    return unique_session
+    return JSONResponse(content={"session_ids": unique_session})
 
 
 @router.get("/model")
