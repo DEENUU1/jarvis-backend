@@ -83,3 +83,17 @@ class CustomSQLChatMessageHistory(SQLChatMessageHistory):
                 == self.session_id
             ).delete()
             session.commit()
+
+    def get_full_conversations(self):
+        """
+        Return all conversations and their messages
+        """
+        with self.Session() as session:
+            result = session.query(self.sql_model_class).all()
+            conversations = []
+            for record in result:
+                messages = []
+                for message in record.messages:
+                    messages.append(self.converter.from_sql_model(message))
+                conversations.append(messages)
+            return conversations
