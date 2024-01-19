@@ -3,7 +3,7 @@ import shutil
 
 from fastapi import APIRouter
 from fastapi import File, UploadFile
-
+from fastapi import Response
 from ai.vector import split_files
 from ai.vector import save_to_pinecone
 
@@ -17,9 +17,9 @@ router = APIRouter(
 def upload_file(uploaded_file: UploadFile = File(...)):
     path = f"media/{uploaded_file.filename}"
 
-    available_files = [".pdf", ".csv", ".json", ".md"]
+    available_files = [".pdf", ".csv", ".json", ".md", ".txt"]
     if not uploaded_file.filename.endswith(tuple(available_files)):
-        raise ValueError("Invalid file type")
+        return Response(content="Invalid file type", status_code=400)
 
     with open(path, "w+b") as file:
         shutil.copyfileobj(uploaded_file.file, file)

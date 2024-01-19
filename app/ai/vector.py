@@ -1,6 +1,6 @@
 import os
 
-from langchain.document_loaders import PyPDFLoader, CSVLoader, JSONLoader, UnstructuredMarkdownLoader
+from langchain.document_loaders import PyPDFLoader, CSVLoader, JSONLoader, UnstructuredMarkdownLoader, TextLoader
 from langchain.embeddings import OpenAIEmbeddings
 from langchain.text_splitter import CharacterTextSplitter
 from langchain_community.vectorstores import Pinecone
@@ -40,6 +40,8 @@ class DataLoaderFactory:
             return JSONLoader(file_path)
         elif file_path.endswith(".md"):
             return UnstructuredMarkdownLoader(file_path)
+        elif file_path.endswith(".txt"):
+            return TextLoader(file_path)
         else:
             raise ValueError("Invalid file type")
 
