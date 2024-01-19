@@ -1,7 +1,7 @@
 # from config.settings import settings
 
 from enum import Enum
-from typing import Any, Optional
+from typing import Any, Optional, List
 import requests
 from dotenv import load_dotenv
 from pydantic import Json, BaseModel
@@ -54,3 +54,20 @@ class Parser(ABC):
     @abstractmethod
     def parse(self, response):
         pass
+
+
+class DatabaseParser(Parser):
+    def parse(self, data: Data) -> List[Optional[str]]:
+        result = []
+
+        responses = data.data.get("results", None)
+
+        if not responses:
+            return []
+
+        for response in responses:
+            page_id = response.get("id", None)
+            if page_id:
+                result.append(page_id)
+
+        return result
