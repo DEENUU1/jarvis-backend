@@ -6,6 +6,8 @@ from fastapi import File, UploadFile
 from fastapi import Response
 from ai.vector import split_files
 from ai.vector import save_to_pinecone
+from ai.sql_chat_history import get_all_conversations
+
 
 router = APIRouter(
     prefix="/media",
@@ -69,3 +71,15 @@ def run_embedding():
         os.remove(file_path)
 
 
+@router.post("/embedding/chat")
+def run_embedding_chat():
+    """
+    Load all conversations and messages, split into chunks and load to pinecone vector db
+    """
+
+    # session_id is not required here
+    conversations = get_all_conversations()
+    for conversation in conversations:
+        print(conversation)
+        # chunks = split_files(conversation)
+        # save_to_pinecone(chunks)

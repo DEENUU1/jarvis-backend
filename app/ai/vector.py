@@ -6,6 +6,8 @@ from langchain.text_splitter import CharacterTextSplitter
 from langchain_community.vectorstores import Pinecone
 
 from config.settings import settings
+from typing import Optional
+
 
 os.environ["PINECONE_API_KEY"] = settings.PINECONE_API_KEY
 
@@ -47,11 +49,15 @@ class DataLoaderFactory:
             raise ValueError("Invalid file type")
 
 
-def split_files(file_path: str):
+def split_files(file_path: Optional[str] = None, data: Optional[str] = None):
     """
     Split files into chunks
     """
-    loader = DataLoaderFactory().split_docs(file_path=file_path)
+    if not file_path:
+        loader = TextLoader(data=data).split_docs()
+    else:
+        loader = DataLoaderFactory().split_docs(file_path=file_path)
+
     document = loader.load()
 
     text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=0)

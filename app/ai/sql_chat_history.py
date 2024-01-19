@@ -4,7 +4,10 @@ from langchain_community.chat_message_histories import SQLChatMessageHistory
 from langchain_community.chat_message_histories.sql import BaseMessageConverter
 from langchain_core.messages import BaseMessage
 from config.settings import settings
-
+from langchain_core.messages import (
+    AIMessage,
+    HumanMessage,
+)
 
 class CustomSQLChatMessageHistory(SQLChatMessageHistory):
     """
@@ -84,16 +87,25 @@ class CustomSQLChatMessageHistory(SQLChatMessageHistory):
             ).delete()
             session.commit()
 
-    def get_full_conversations(self):
-        """
-        Return all conversations and their messages
-        """
-        with self.Session() as session:
-            result = session.query(self.sql_model_class).all()
-            conversations = []
-            for record in result:
-                messages = []
-                for message in record.messages:
-                    messages.append(self.converter.from_sql_model(message))
-                conversations.append(messages)
-            return conversations
+
+def get_all_conversations() -> List[Optional[str]]:
+    """
+    Get all conversations from db
+    """
+    result = []
+    # Initialize CustomSQLChatMessageHistory with session_id=null to get all unique session_ids from db
+    session_ids = CustomSQLChatMessageHistory(session_id="null").unique_session_ids()
+
+    for session_id in session_ids:
+        sql_message = CustomSQLChatMessageHistory(session_id=session_id)
+        messages = sql_message.messages
+        # Get all messages for specified session_id
+
+        for message in messages:
+            # Save only content as a string and check if messages comes from Human or AI
+            if hasattr(message, 'content'):
+                content = message.content
+                source = "AI" if isinstance(message, AIMessage) else "HUMAN"
+                result.append(f"{source}: {content}")
+
+    return result
