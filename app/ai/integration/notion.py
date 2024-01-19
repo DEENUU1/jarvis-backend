@@ -94,43 +94,14 @@ class PageParser(Parser):
     ]
 
     @staticmethod
-    def get_rich_text(object_name: str, result: Dict[str, Any]):
+    def parse_object(object_name: str, result: Dict[str, Any]) -> Optional[str]:
+        text = ""
+
         obj = result.get(object_name, None)
         if not obj:
             return None
 
-        return obj.get("rich_text", None)
-
-    def parse_paragraph(self, result: Dict[str, Any]) -> Optional[str]:
-        text = ""
-
-        rich_text = self.get_rich_text("paragraph", result)
-        if not rich_text:
-            return None
-
-        for obj in rich_text:
-            text += obj.get("plain_text", " ")
-
-        return text
-
-    def parse_todo(self, result: Dict[str, Any]) -> Optional[str]:
-        text = ""
-
-        rich_text = self.get_rich_text("to_do", result)
-
-        if not rich_text:
-            return None
-
-        for obj in rich_text:
-            text += obj.get("plain_text", " ")
-
-        return text
-
-    def parse_heading(self, result: Dict[str, Any], number: int) -> Optional[str]:
-        text = ""
-
-        rich_text = self.get_rich_text(f"heading_{number}", result)
-
+        rich_text = obj.get("rich_text", None)
         if not rich_text:
             return None
 
@@ -152,24 +123,11 @@ class PageParser(Parser):
             if not result_type or result_type not in self.VALID_OBJECTS:
                 continue
 
-            if result_type == "paragraph":
-                paragraph = self.parse_paragraph(result)
-                if paragraph:
-                    text += paragraph
-                    text += "\n"
+            plain_text = self.parse_object(result_type, result)
 
-            elif result_type == "to_do":
-                todo = self.parse_todo(result)
-                if todo:
-                    text += todo
-                    text += "\n"
-
-            elif result_type in ["heading_1", "heading_2", "heading_3"]:
-                number = int(result_type[-1])
-                heading = self.parse_heading(result, number)
-                if heading:
-                    text += heading
-                    text += "\n"
+            if plain_text:
+                text += plain_text
+                text += "\n"
 
         return text
 
