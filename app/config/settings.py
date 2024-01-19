@@ -10,7 +10,7 @@ load_dotenv()
 class Settings(BaseSettings):
     # FastAPI
     DEBUG: Literal["False", "True"] = os.getenv("DEBUG")
-    TITLE: str = os.getenv("TITLE")
+    TITLE: Optional[str] = os.getenv("TITLE")
 
     # SQLite
     SQLITE_CONNECTION_STRING: Optional[str] = os.getenv("SQLITE_CONNECTION_STRING")
@@ -19,12 +19,14 @@ class Settings(BaseSettings):
 
     # AI
     MODELS: ClassVar = os.getenv("MODELS").split(",")
-    OPENAI_KEY: str = os.getenv("OPENAI_KEY")
+    OPENAI_KEY: Optional[str] = os.getenv("OPENAI_KEY")
 
     # USER
-    FIRST_NAME: str = os.getenv("FIRST_NAME")
-    LAST_NAME: str = os.getenv("LAST_NAME")
-    LOCATION: str = os.getenv("CITY")
+    FIRST_NAME: Optional[str] = os.getenv("FIRST_NAME")
+    LAST_NAME: Optional[str] = os.getenv("LAST_NAME")
+    LOCATION: Optional[str] = os.getenv("CITY")
 
+    # INTEGRATION
+    NOTION_API_KEY: Optional[str] = os.getenv("NOTION_API_KEY")
 
 settings = Settings()
