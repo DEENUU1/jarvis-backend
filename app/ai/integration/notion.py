@@ -1,13 +1,14 @@
 # from config.settings import settings
 
+import json
+import os
+from abc import ABC, abstractmethod
 from enum import Enum
-from typing import Any, Optional, List
+from typing import Any, Optional, List, Dict
+
 import requests
 from dotenv import load_dotenv
 from pydantic import Json, BaseModel
-from abc import ABC, abstractmethod
-import os
-import json
 
 load_dotenv()
 
@@ -27,7 +28,7 @@ class Data(BaseModel):
 class NotionAPI:
     BASE_URL: str = "https://api.notion.com/v1/"
 
-    def __init__(self, token: str, category: Optional[Categories] = None):
+    def __init__(self, token: str, category: Optional[Categories] = None) -> None:
         self.headers = {
             "Authorization": f"Bearer {token}",
             "Content-Type": "application/json",
@@ -35,7 +36,7 @@ class NotionAPI:
         }
         self.category = category.value
 
-    def get_database_data(self, database_id: str) -> Data | None:
+    def get_database_data(self, database_id: str) -> Optional[Data]:
         endpoint = f"databases/{database_id}/query"
         try:
             response = requests.post(self.BASE_URL + endpoint, headers=self.headers)
@@ -44,8 +45,8 @@ class NotionAPI:
         except Exception as e:
             print(e)
 
-    def get_page_content(self, page_id: str):
-        endpoint = f"pages/{page_id}"
+    def get_page_content(self, page_id: str) -> Optional[Data]:
+        endpoint = f"blocks/{page_id}/children"
         try:
             response = requests.get(self.BASE_URL + endpoint, headers=self.headers)
             json_data = json.dumps(response.json())
@@ -77,10 +78,70 @@ class DatabaseParser(Parser):
         return result
 
 
+class PageParser(Parser):
+
+    VALID_OBJECTS = [
+        "paragraph",
+        "to_do",
+        "heading_1",
+        "heading_2",
+        "heading_3",
+        "bulleted_list_item",
+        "numbered_list_item",
+        "toggle",
+        "quote",
+        "callout",
+    ]
+
+    @staticmethod
+    def parse_paragraph(result: Dict[str, Any]) -> Optional[str]:
+        text = ""
+
+        paragraph = result.get("paragraph", None)
+        if not paragraph:
+            return None
+
+        rich_text = paragraph.get("rich_text", None)
+        if not rich_text:
+            return None
+
+        for obj in rich_text:
+            text += obj.get("plain_text", " ")
+
+        return text
+
+    def parse(self, data: Data) -> Optional[str]:
+        results = data.data.get("results", None)
+
+        if not results:
+            return None
+
+        text = ''
+
+        for result in results:
+            result_type = result.get("type", None)
+            if not result_type or result_type not in self.VALID_OBJECTS:
+                continue
+
+            if result_type == "paragraph":
+                paragraph = self.parse_paragraph(result)
+                if paragraph:
+                    text += paragraph
+                    text += "\n"
+
+        return text
+
+
 
 if __name__ == "__main__":
     notion = NotionAPI(token=os.getenv("NOTION_API_KEY"), category=Categories.LEARNING)
     pages = notion.get_database_data(database_id=os.getenv("NOTION_RESOURCES_ID"))
-    print(pages)
     parse_pages = DatabaseParser().parse(pages)
-    print(parse_pages)
+
+    # for page in parse_pages:
+    #     content = notion.get_page_content(page_id=page)
+    #     print(content)
+
+    content = notion.get_page_content(page_id="95b36a75-3a51-4673-bcb2-aac50d54fc6e")
+    page_parser = PageParser()
+    print(page_parser.parse(content))
