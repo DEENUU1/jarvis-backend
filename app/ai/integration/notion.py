@@ -94,14 +94,30 @@ class PageParser(Parser):
     ]
 
     @staticmethod
-    def parse_paragraph(result: Dict[str, Any]) -> Optional[str]:
-        text = ""
-
-        paragraph = result.get("paragraph", None)
-        if not paragraph:
+    def get_rich_text(object_name: str, result: Dict[str, Any]):
+        obj = result.get(object_name, None)
+        if not obj:
             return None
 
-        rich_text = paragraph.get("rich_text", None)
+        return obj.get("rich_text", None)
+
+    def parse_paragraph(self, result: Dict[str, Any]) -> Optional[str]:
+        text = ""
+
+        rich_text = self.get_rich_text("paragraph", result)
+        if not rich_text:
+            return None
+
+        for obj in rich_text:
+            text += obj.get("plain_text", " ")
+
+        return text
+
+    def parse_todo(self, result: Dict[str, Any]) -> Optional[str]:
+        text = ""
+
+        rich_text = self.get_rich_text("to_do", result)
+
         if not rich_text:
             return None
 
@@ -128,6 +144,13 @@ class PageParser(Parser):
                 if paragraph:
                     text += paragraph
                     text += "\n"
+
+            elif result_type == "to_do":
+                todo = self.parse_todo(result)
+                if todo:
+                    text += todo
+                    text += "\n"
+
 
         return text
 
