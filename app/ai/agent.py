@@ -8,7 +8,10 @@ from .llm import get_chat_openai
 from .memory import setup_memory
 from .prompt import prompt
 from langchain.chains import RetrievalQA
-from .vector import get_chroma_db
+from .vector import get_pinecone
+import langchain
+
+langchain.debug = True
 
 
 def setup_agent(session_id: str, model: str):
@@ -20,19 +23,19 @@ def setup_agent(session_id: str, model: str):
     personal_data = RetrievalQA.from_chain_type(
         llm=llm,
         chain_type="stuff",
-        retriever=get_chroma_db().as_retriever,
+        retriever=get_pinecone().as_retriever(),
     )
 
     tools = [
         Tool(
             name="Search",
             func=duckduck_search.run,
-            description="useful for when you need to answer questions about current events. You should ask targeted questions"
+            description="Useful for when you need to answer questions about current events. You should ask targeted questions"
         ),
         Tool(
-            name="Personal Data",
+            name="User-private-data",
             func=personal_data.run,
-            description="Useful for when you need to answer questions about personal data or user's stuff. Use it if use don't know answer"
+            description="Useful when you need to answer questions about user's personal data"
         )
     ]
 
@@ -49,7 +52,7 @@ def setup_agent(session_id: str, model: str):
         agent=agent,
         tools=tools,
         memory=memory,
-        verbose=False,
+        verbose=True,
         handle_parsing_errors=True
     )
 
