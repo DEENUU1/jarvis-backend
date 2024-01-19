@@ -6,6 +6,8 @@ import requests
 from dotenv import load_dotenv
 from pydantic import Json, BaseModel
 from abc import ABC, abstractmethod
+import os
+import json
 
 load_dotenv()
 
@@ -37,7 +39,8 @@ class NotionAPI:
         endpoint = f"databases/{database_id}/query"
         try:
             response = requests.post(self.BASE_URL + endpoint, headers=self.headers)
-            return Data(category=self.category, data=response.json())
+            json_data = json.dumps(response.json())
+            return Data(category=self.category, data=json_data)
         except Exception as e:
             print(e)
 
@@ -45,7 +48,8 @@ class NotionAPI:
         endpoint = f"pages/{page_id}"
         try:
             response = requests.get(self.BASE_URL + endpoint, headers=self.headers)
-            return Data(category=self.category, data=response.json())
+            json_data = json.dumps(response.json())
+            return Data(category=self.category, data=json_data)
         except Exception as e:
             print(e)
 
@@ -71,3 +75,12 @@ class DatabaseParser(Parser):
                 result.append(page_id)
 
         return result
+
+
+
+if __name__ == "__main__":
+    notion = NotionAPI(token=os.getenv("NOTION_API_KEY"), category=Categories.LEARNING)
+    pages = notion.get_database_data(database_id=os.getenv("NOTION_RESOURCES_ID"))
+    print(pages)
+    parse_pages = DatabaseParser().parse(pages)
+    print(parse_pages)
