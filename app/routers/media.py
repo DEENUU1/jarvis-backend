@@ -7,7 +7,6 @@ from fastapi import Response
 from ai.vector import split_files
 from ai.vector import save_to_pinecone
 from ai.sql_chat_history import get_all_conversations
-from typing import Dict, Optional, List
 
 
 router = APIRouter(
@@ -17,7 +16,7 @@ router = APIRouter(
 
 
 @router.post("/upload")
-def upload_file(uploaded_file: UploadFile = File(...)) -> Dict[str, str] | Response:
+def upload_file(uploaded_file: UploadFile = File(...)):
     path = f"media/{uploaded_file.filename}"
 
     available_files = [".pdf", ".csv", ".json", ".md", ".txt"]
@@ -34,7 +33,7 @@ def upload_file(uploaded_file: UploadFile = File(...)) -> Dict[str, str] | Respo
 
 
 @router.get("/file")
-def get_file_list() -> List[Optional[str]]:
+def get_file_list():
     root_path = "media"
     # Return files with full path
     pdf_files = [os.path.join(root_path, f) for f in os.listdir(root_path)]
@@ -54,7 +53,7 @@ def get_file_list() -> List[Optional[str]]:
 
 
 @router.post("/embedding")
-def run_embedding() -> Dict[str, str]:
+def run_embedding():
     root_path = "media"
 
     # Get all files from root path
@@ -75,7 +74,7 @@ def run_embedding() -> Dict[str, str]:
 
 
 @router.post("/embedding/chat")
-def run_embedding_chat() -> Dict[str, str]:
+def run_embedding_chat():
     """
     Load all conversations and messages, split into chunks and load to pinecone vector db
     """
