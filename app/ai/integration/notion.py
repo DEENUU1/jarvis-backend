@@ -126,6 +126,19 @@ class PageParser(Parser):
 
         return text
 
+    def parse_heading(self, result: Dict[str, Any], number: int) -> Optional[str]:
+        text = ""
+
+        rich_text = self.get_rich_text(f"heading_{number}", result)
+
+        if not rich_text:
+            return None
+
+        for obj in rich_text:
+            text += obj.get("plain_text", " ")
+
+        return text
+
     def parse(self, data: Data) -> Optional[str]:
         results = data.data.get("results", None)
 
@@ -151,6 +164,12 @@ class PageParser(Parser):
                     text += todo
                     text += "\n"
 
+            elif result_type in ["heading_1", "heading_2", "heading_3"]:
+                number = int(result_type[-1])
+                heading = self.parse_heading(result, number)
+                if heading:
+                    text += heading
+                    text += "\n"
 
         return text
 
