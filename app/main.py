@@ -30,7 +30,7 @@ app.add_middleware(
 
 
 @app.on_event("startup")
-def startup_event():
+def startup_event() -> None:
     """
     On app start check if 'media' directory exists and if not create it
     """

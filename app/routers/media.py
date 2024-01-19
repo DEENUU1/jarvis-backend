@@ -7,6 +7,7 @@ from fastapi import Response
 from ai.vector import split_files
 from ai.vector import save_to_pinecone
 from ai.sql_chat_history import get_all_conversations
+from typing import Dict, Optional, List
 
 
 router = APIRouter(
@@ -16,7 +17,7 @@ router = APIRouter(
 
 
 @router.post("/upload")
-def upload_file(uploaded_file: UploadFile = File(...)):
+def upload_file(uploaded_file: UploadFile = File(...)) -> Dict[str, str] | Response:
     path = f"media/{uploaded_file.filename}"
 
     available_files = [".pdf", ".csv", ".json", ".md", ".txt"]
@@ -33,7 +34,7 @@ def upload_file(uploaded_file: UploadFile = File(...)):
 
 
 @router.get("/file")
-def get_file_list():
+def get_file_list() -> List[Optional[str]]:
     root_path = "media"
     # Return files with full path
     pdf_files = [os.path.join(root_path, f) for f in os.listdir(root_path)]
@@ -41,19 +42,19 @@ def get_file_list():
     return pdf_files
 
 
-@router.delete("/file/{path}")
-def delete_file(path: str):
-    try:
-        os.remove(path)
-        return {"message": "File deleted successfully"}
-    except FileNotFoundError:
-        return {"message": "File not found"}
-    except Exception as e:
-        return {"error": str(e)}
+# @router.delete("/file/{path}")
+# def delete_file(path: str):
+#     try:
+#         os.remove(path)
+#         return {"message": "File deleted successfully"}
+#     except FileNotFoundError:
+#         return {"message": "File not found"}
+#     except Exception as e:
+#         return {"error": str(e)}
 
 
 @router.post("/embedding")
-def run_embedding():
+def run_embedding() -> Dict[str, str]:
     root_path = "media"
 
     # Get all files from root path
@@ -70,9 +71,11 @@ def run_embedding():
         # Delete file after processing
         os.remove(file_path)
 
+    return {"message": "Embedding completed"}
+
 
 @router.post("/embedding/chat")
-def run_embedding_chat():
+def run_embedding_chat() -> Dict[str, str]:
     """
     Load all conversations and messages, split into chunks and load to pinecone vector db
     """
@@ -80,6 +83,7 @@ def run_embedding_chat():
     # session_id is not required here
     conversations = get_all_conversations()
     for conversation in conversations:
-        print(conversation)
-        # chunks = split_files(conversation)
-        # save_to_pinecone(chunks)
+        chunks = split_files(data=conversation)
+        save_to_pinecone(chunks)
+
+    return {"message": "Embedding completed"}

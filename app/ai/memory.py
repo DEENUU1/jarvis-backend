@@ -10,7 +10,7 @@ from .sql_chat_history import CustomSQLChatMessageHistory
 # from .prompt import prompt
 
 
-def setup_memory(session_id: str):
+def setup_memory(session_id: str) -> ConversationBufferMemory:
     chat_message_history = CustomSQLChatMessageHistory(session_id=session_id)
 
     # agent_kwargs = {

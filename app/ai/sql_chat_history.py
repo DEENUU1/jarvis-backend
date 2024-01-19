@@ -4,10 +4,8 @@ from langchain_community.chat_message_histories import SQLChatMessageHistory
 from langchain_community.chat_message_histories.sql import BaseMessageConverter
 from langchain_core.messages import BaseMessage
 from config.settings import settings
-from langchain_core.messages import (
-    AIMessage,
-    HumanMessage,
-)
+from langchain_core.messages import AIMessage
+
 
 class CustomSQLChatMessageHistory(SQLChatMessageHistory):
     """
@@ -62,7 +60,7 @@ class CustomSQLChatMessageHistory(SQLChatMessageHistory):
                 messages.append(self.converter.from_sql_model(record))
             return messages
 
-    def create_conversation(self):
+    def create_conversation(self) -> None:
         """
         Create Message object with generated session_id
         """
@@ -75,7 +73,7 @@ class CustomSQLChatMessageHistory(SQLChatMessageHistory):
             session.add(empty_sql_model)
             session.commit()
 
-    def delete_conversation(self):
+    def delete_conversation(self) -> None:
         """
         Delete all Message objects with specified session_id
         """

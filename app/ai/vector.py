@@ -1,22 +1,21 @@
 import os
+from typing import Optional, List
 
 from langchain.document_loaders import PyPDFLoader, CSVLoader, JSONLoader, UnstructuredMarkdownLoader, TextLoader
 from langchain.embeddings import OpenAIEmbeddings
 from langchain.text_splitter import CharacterTextSplitter
 from langchain_community.vectorstores import Pinecone
-
+from langchain.docstore.document import Document
 from config.settings import settings
-from typing import Optional
-
 
 os.environ["PINECONE_API_KEY"] = settings.PINECONE_API_KEY
 
 
-def get_embedding_func():
+def get_embedding_func() -> OpenAIEmbeddings:
     return OpenAIEmbeddings(openai_api_key=settings.OPENAI_KEY)
 
 
-def save_to_pinecone(data):
+def save_to_pinecone(data: List[Document]):
     vector_db = Pinecone.from_documents(
         data,
         get_embedding_func(),
@@ -25,7 +24,7 @@ def save_to_pinecone(data):
     return vector_db
 
 
-def get_pinecone():
+def get_pinecone() -> Pinecone:
     return Pinecone.from_existing_index(
         index_name=settings.PINECONE_INDEX,
         embedding=get_embedding_func(),
@@ -49,18 +48,25 @@ class DataLoaderFactory:
             raise ValueError("Invalid file type")
 
 
-def split_files(file_path: Optional[str] = None, data: Optional[str] = None):
+def create_document_from_string(data: str) -> Document:
+    return Document(page_content=data, metadata={"source": "local"})
+
+
+def split_files(file_path: Optional[str] = None, data: Optional[str] = None) -> List[Document]:
     """
     Split files into chunks
     """
+    text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
+
     if not file_path:
-        loader = TextLoader(data=data).split_docs()
+        split_text = text_splitter.split_text(data)
+        documents = []
+        for text in split_text:
+            documents.append(create_document_from_string(text))
     else:
         loader = DataLoaderFactory().split_docs(file_path=file_path)
+        document = loader.load()
 
-    document = loader.load()
+        documents = text_splitter.split_documents(document)
 
-    text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
-    documents = text_splitter.split_documents(document)
     return documents
-

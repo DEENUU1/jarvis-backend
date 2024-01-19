@@ -75,7 +75,7 @@ def get_messages(session_id: str):
 
 
 @router.delete("/{session_id}")
-def delete_conversation(session_id: str):
+def delete_conversation(session_id: str) -> Dict[str, str]:
     """
     Delete all messages for specified session_id
     """

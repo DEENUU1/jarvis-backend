@@ -14,7 +14,7 @@ import langchain
 langchain.debug = True
 
 
-def setup_agent(session_id: str, model: str):
+def setup_agent(session_id: str, model: str) -> AgentExecutor:
     llm = get_chat_openai(model=model)
     duckduck_search = DuckDuckGoSearchAPIWrapper()
     # _, memory = setup_memory(session_id=session_id)
