@@ -5,6 +5,7 @@ from typing import Any, Optional
 import requests
 from dotenv import load_dotenv
 from pydantic import Json, BaseModel
+from abc import ABC, abstractmethod
 
 load_dotenv()
 
@@ -47,3 +48,9 @@ class NotionAPI:
             return Data(category=self.category, data=response.json())
         except Exception as e:
             print(e)
+
+
+class Parser(ABC):
+    @abstractmethod
+    def parse(self, response):
+        pass
