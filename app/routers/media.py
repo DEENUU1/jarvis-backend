@@ -30,6 +30,26 @@ def upload_file(uploaded_file: UploadFile = File(...)):
     }
 
 
+@router.get("/file")
+def get_file_list():
+    root_path = "media"
+    # Return files with full path
+    pdf_files = [os.path.join(root_path, f) for f in os.listdir(root_path)]
+
+    return pdf_files
+
+
+@router.delete("/file/{path}")
+def delete_file(path: str):
+    try:
+        os.remove(path)
+        return {"message": "File deleted successfully"}
+    except FileNotFoundError:
+        return {"message": "File not found"}
+    except Exception as e:
+        return {"error": str(e)}
+
+
 @router.post("/embedding")
 def run_embedding():
     root_path = "media"
