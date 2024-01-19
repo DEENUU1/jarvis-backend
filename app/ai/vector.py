@@ -31,7 +31,8 @@ def get_pinecone():
 
 
 class DataLoaderFactory:
-    def split_docs(self, file_path: str):
+    @staticmethod
+    def split_docs(file_path: str):
         if file_path.endswith(".pdf"):
             return PyPDFLoader(file_path)
         elif file_path.endswith(".csv"):
