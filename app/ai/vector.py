@@ -44,7 +44,7 @@ class DataLoaderFactory:
             raise ValueError("Invalid file type")
 
 
-def split_files(file_path: str) -> ...:
+def split_files(file_path: str):
     """
     Split files into chunks
     """

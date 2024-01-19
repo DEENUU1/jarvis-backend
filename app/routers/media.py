@@ -17,6 +17,10 @@ router = APIRouter(
 def upload_file(uploaded_file: UploadFile = File(...)):
     path = f"media/{uploaded_file.filename}"
 
+    available_files = [".pdf", ".csv", ".json", ".md"]
+    if not uploaded_file.filename.endswith(tuple(available_files)):
+        raise ValueError("Invalid file type")
+
     with open(path, "w+b") as file:
         shutil.copyfileobj(uploaded_file.file, file)
 
