@@ -1,23 +1,56 @@
-# from config.settings import settings
+from config.settings import settings
 
 import json
-import os
+# import os
 from abc import ABC, abstractmethod
 from enum import Enum
 from typing import Any, Optional, List, Dict
 
 import requests
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 from pydantic import Json, BaseModel
 
-load_dotenv()
+# load_dotenv()
 
 
 class Categories(Enum):
+    """
+    Name of category based on data collected in notion database
+    While using Pinecone the name of the category should have the same name as a index in vector database
+    """
     LEARNING = "learning"
     WORK = "work"
-    LIFE = "life"
+    PRIVATE = "private"
     IT = "it"
+
+
+def get_map_category():
+    return {
+        Categories.LEARNING: [
+            settings.NOTION_RESOURCES_ID,
+            settings.NOTION_LEARNING_ID,
+            settings.NOTION_I_SEMESTR_ID,
+        ],
+        Categories.WORK: [
+            settings.NOTION_USEME_ID,
+            settings.NOTION_AS_ID,
+            settings.NOTION_UDEMY_ID,
+            settings.NOTION_DODATKOWE_ID
+        ],
+        Categories.PRIVATE: [
+            settings.NOTION_NOTES_ID,
+            settings.NOTION_BOOKS_ID,
+            settings.NOTION_QUOTES_ID
+        ],
+        Categories.IT: [
+            settings.NOTION_PROJECTS_ID,
+            settings.NOTION_PROGRAMMING_ID,
+            settings.NOTION_DATASTRUCTURES_ID,
+            settings.NOTION_ALGORITHMS_ID,
+            settings.NOTION_TLACYWN_ID,
+            settings.NOTION_COMPUTERS_ID,
+        ]
+    }
 
 
 class Data(BaseModel):
@@ -57,7 +90,7 @@ class NotionAPI:
 
 class Parser(ABC):
     @abstractmethod
-    def parse(self, response):
+    def parse(self, response) -> None:
         pass
 
 
@@ -79,7 +112,6 @@ class DatabaseParser(Parser):
 
 
 class PageParser(Parser):
-
     VALID_OBJECTS = [
         "paragraph",
         "to_do",
@@ -132,16 +164,14 @@ class PageParser(Parser):
         return text
 
 
-
-if __name__ == "__main__":
-    notion = NotionAPI(token=os.getenv("NOTION_API_KEY"), category=Categories.LEARNING)
-    pages = notion.get_database_data(database_id=os.getenv("NOTION_RESOURCES_ID"))
-    parse_pages = DatabaseParser().parse(pages)
-
-    # for page in parse_pages:
-    #     content = notion.get_page_content(page_id=page)
-    #     print(content)
-
-    content = notion.get_page_content(page_id="95b36a75-3a51-4673-bcb2-aac50d54fc6e")
-    page_parser = PageParser()
-    print(page_parser.parse(content))
+# if __name__ == "__main__":
+#     notion = NotionAPI(token=os.getenv("NOTION_API_KEY"), category=Categories.LEARNING)
+#     pages = notion.get_database_data(database_id=os.getenv("NOTION_RESOURCES_ID"))
+#     parse_pages = DatabaseParser().parse(pages)
+#
+#     for page in parse_pages:
+#         content = notion.get_page_content(page_id=page)
+#
+#         page_parser = PageParser()
+#         parsed_content = page_parser.parse(content)
+#         print(parsed_content)
