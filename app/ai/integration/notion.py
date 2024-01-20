@@ -200,3 +200,21 @@ class PageParser(Parser):
 #         page_parser = PageParser()
 #         parsed_content = page_parser.parse(content)
 #         print(parsed_content)
+
+
+def notion(category: Categories, dbs: str) -> List[Optional[str]]:
+    notion_api = NotionAPI(
+        token=settings.NOTION_API_KEY, category=category
+    )
+    pages = notion_api.get_database_data(database_id=dbs)
+    parse_pages = DatabaseParser().parse(pages)
+
+    parsed_pages = []
+
+    for page in parse_pages:
+        content = notion_api.get_page_content(page_id=page)
+        page_parser = PageParser()
+        parsed_content = page_parser.parse(content)
+        parsed_pages.append(parsed_content)
+
+    return parsed_pages

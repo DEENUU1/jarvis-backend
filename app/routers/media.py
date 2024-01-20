@@ -7,7 +7,7 @@ from fastapi import Response
 from ai.vector import split_files
 from ai.vector import save_to_pinecone
 from ai.sql_chat_history import get_all_conversations
-from ai.integration.notion import NotionAPI, DatabaseParser, get_map_category, PageParser
+from ai.integration.notion import notion, get_map_category
 from config.settings import settings
 
 
@@ -99,14 +99,14 @@ def run_embedding_notion():
     mapper = get_map_category()
     for category in mapper.keys():
         for dbs in mapper[category]:
-            notion_api = NotionAPI(
-                token=settings.NOTION_API_KEY, category=category
+            parsed_pages = notion(
+                category=category,
+                dbs=dbs
             )
-            pages = notion_api.get_database_data(database_id=dbs)
-            parse_pages = DatabaseParser().parse(pages)
+            for content in parsed_pages:
+                if content:
+                    chunks = split_files(data=content)
+                    save_to_pinecone(chunks)
 
-            for page in parse_pages:
-                content = notion_api.get_page_content(page_id=page)
-                page_parser = PageParser()
-                parsed_content = page_parser.parse(content)
-                print(parsed_content)
+    return {"message": "Embedding completed"}
+
