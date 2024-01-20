@@ -14,8 +14,11 @@ class Settings(BaseSettings):
 
     # SQLite
     SQLITE_CONNECTION_STRING: Optional[str] = os.getenv("SQLITE_CONNECTION_STRING")
-    PINECONE_INDEX: Optional[str] = os.getenv("PINECONE_INDEX")
     PINECONE_API_KEY: Optional[str] = os.getenv("PINECONE_API_KEY")
+    PINECONE_LEARNING_INDEX: str = "learning"
+    PINECONE_WORK_INDEX: str = "work"
+    PINECONE_PRIVATE_INDEX: str = "private"
+    PINECONE_IT_INDEX: str = "it"
 
     # AI
     MODELS: ClassVar = os.getenv("MODELS").split(",")

@@ -10,6 +10,7 @@ from .prompt import prompt
 from langchain.chains import RetrievalQA
 from .vector import get_pinecone
 import langchain
+from config.settings import settings
 
 langchain.debug = True
 
@@ -23,7 +24,7 @@ def setup_agent(session_id: str, model: str) -> AgentExecutor:
     personal_data = RetrievalQA.from_chain_type(
         llm=llm,
         chain_type="stuff",
-        retriever=get_pinecone().as_retriever(),
+        retriever=get_pinecone(settings.PINECONE_PRIVATE_INDEX).as_retriever(),
     )
 
     tools = [

@@ -1,15 +1,17 @@
-import os
 import shutil
 
 from fastapi import APIRouter
 from fastapi import File, UploadFile
 from fastapi import Response
-from ai.vector import split_files
-from ai.vector import save_to_pinecone
-from ai.sql_chat_history import get_all_conversations
-from ai.integration.notion import notion, get_map_category
-from config.settings import settings
 
+from ai.integration.notion import notion, get_map_category
+from ai.sql_chat_history import get_all_conversations
+from ai.vector import save_to_pinecone
+from ai.vector import split_files
+from config.settings import settings
+from schemas.media import FileCategory
+
+import os
 
 router = APIRouter(
     prefix="/media",
@@ -17,8 +19,11 @@ router = APIRouter(
 )
 
 
-@router.post("/upload")
-def upload_file(uploaded_file: UploadFile = File(...)):
+@router.post("/file")
+def upload_file(file_category: FileCategory, uploaded_file: UploadFile = File(...)):
+    """
+    Endpoint for uploading a file, processing its content, and saving it to Pinecone.
+    """
     path = f"media/{uploaded_file.filename}"
 
     available_files = [".pdf", ".csv", ".json", ".md", ".txt"]
@@ -28,74 +33,31 @@ def upload_file(uploaded_file: UploadFile = File(...)):
     with open(path, "w+b") as file:
         shutil.copyfileobj(uploaded_file.file, file)
 
-    return {
-        "filename": uploaded_file.filename,
-        "path": path
-    }
-
-
-@router.get("/file")
-def get_file_list():
-    root_path = "media"
-    # Return files with full path
-    pdf_files = [os.path.join(root_path, f) for f in os.listdir(root_path)]
-
-    return pdf_files
-
-
-# @router.delete("/file/{path}")
-# def delete_file(path: str):
-#     try:
-#         os.remove(path)
-#         return {"message": "File deleted successfully"}
-#     except FileNotFoundError:
-#         return {"message": "File not found"}
-#     except Exception as e:
-#         return {"error": str(e)}
-
-
-@router.post("/embedding")
-def run_embedding():
-    root_path = "media"
-
-    # Get all files from root path
-    pdf_files = [f for f in os.listdir(root_path)]
-
-    for file in pdf_files:
-        # Get path for file
-        file_path = os.path.join(root_path, file)
-        # Run function to split files into chunks and return it
-        chunks = split_files(file_path)
-        # Save chunks to pinecone vector database
-        save_to_pinecone(chunks)
-
-        # Delete file after processing
-        os.remove(file_path)
+    chunks = split_files(path)
+    save_to_pinecone(chunks, file_category.name)
+    os.remove(path)
 
     return {"message": "Embedding completed"}
 
 
-@router.post("/embedding/chat")
+@router.post("/chat")
 def run_embedding_chat():
     """
     Load all conversations and messages, split into chunks and load to pinecone vector db
     """
-
-    # session_id is not required here
     conversations = get_all_conversations()
     for conversation in conversations:
         chunks = split_files(data=conversation)
-        save_to_pinecone(chunks)
+        save_to_pinecone(chunks, settings.PINECONE_PRIVATE_INDEX)
 
     return {"message": "Embedding completed"}
 
 
-@router.post("/embedding/notion")
+@router.post("/notion")
 def run_embedding_notion():
     """
-    Load all databases into vector db
+    Endpoint to load all databases into vector db
     """
-
     mapper = get_map_category()
     for category in mapper.keys():
         for dbs in mapper[category]:
@@ -106,7 +68,6 @@ def run_embedding_notion():
             for content in parsed_pages:
                 if content:
                     chunks = split_files(data=content)
-                    save_to_pinecone(chunks)
+                    save_to_pinecone(chunks, category.value)
 
     return {"message": "Embedding completed"}
-
