@@ -56,7 +56,7 @@ def split_files(file_path: Optional[str] = None, data: Optional[str] = None) -> 
     """
     Split files into chunks
     """
-    text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
+    text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
 
     if not file_path:
         split_text = text_splitter.split_text(data)
