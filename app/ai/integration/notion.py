@@ -1,16 +1,12 @@
-from config.settings import settings
-
 import json
-# import os
 from abc import ABC, abstractmethod
 from enum import Enum
 from typing import Any, Optional, List, Dict
 
 import requests
-# from dotenv import load_dotenv
 from pydantic import Json, BaseModel
 
-# load_dotenv()
+from config.settings import settings
 
 
 class Categories(Enum):
@@ -24,8 +20,8 @@ class Categories(Enum):
     IT = "it"
 
 
-def get_map_category():
-    return {
+def get_map_category() -> Dict[Categories, List[str]]:
+    map = {
         Categories.LEARNING: [
             settings.NOTION_RESOURCES_ID,
             settings.NOTION_LEARNING_ID,
@@ -52,6 +48,11 @@ def get_map_category():
         ]
     }
 
+    if settings.NOTION_DEBUG:
+        print(map)
+
+    return map
+
 
 class Data(BaseModel):
     data: Json[Any]
@@ -68,12 +69,22 @@ class NotionAPI:
             "Notion-Version": "2022-06-28"
         }
         self.category = category.value
+        self.debug = settings.NOTION_DEBUG
+
+        if self.debug:
+            print(f"Run NotionAPI for {self.category}")
 
     def get_database_data(self, database_id: str) -> Optional[Data]:
         endpoint = f"databases/{database_id}/query"
         try:
             response = requests.post(self.BASE_URL + endpoint, headers=self.headers)
+            if self.debug:
+                print(response.status_code)
+
             json_data = json.dumps(response.json())
+            if self.debug:
+                print(json_data)
+
             return Data(category=self.category, data=json_data)
         except Exception as e:
             print(e)
@@ -82,13 +93,22 @@ class NotionAPI:
         endpoint = f"blocks/{page_id}/children"
         try:
             response = requests.get(self.BASE_URL + endpoint, headers=self.headers)
+            if self.debug:
+                print(response.status_code)
+
             json_data = json.dumps(response.json())
+            if self.debug:
+                print(json_data)
+
             return Data(category=self.category, data=json_data)
         except Exception as e:
             print(e)
 
 
 class Parser(ABC):
+    def __init__(self):
+        self.debug = settings.NOTION_DEBUG
+
     @abstractmethod
     def parse(self, response) -> None:
         pass
@@ -107,6 +127,9 @@ class DatabaseParser(Parser):
             page_id = response.get("id", None)
             if page_id:
                 result.append(page_id)
+
+        if self.debug:
+            print(result)
 
         return result
 
@@ -161,8 +184,10 @@ class PageParser(Parser):
                 text += plain_text
                 text += "\n"
 
-        return text
+        if self.debug:
+            print(text)
 
+        return text
 
 # if __name__ == "__main__":
 #     notion = NotionAPI(token=os.getenv("NOTION_API_KEY"), category=Categories.LEARNING)

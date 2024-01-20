@@ -27,6 +27,7 @@ class Settings(BaseSettings):
     LOCATION: Optional[str] = os.getenv("CITY")
 
     # INTEGRATION
+    NOTION_DEBUG: bool = os.getenv("NOTION_DEBUG") == "True"
     NOTION_API_KEY: Optional[str] = os.getenv("NOTION_API_KEY")
     NOTION_NOTES_ID: Optional[str] = os.getenv("NOTION_NOTES_ID")
     NOTION_RESOURCES_ID: Optional[str] = os.getenv("NOTION_RESOURCES_ID")

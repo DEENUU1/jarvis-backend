@@ -7,7 +7,8 @@ from fastapi import Response
 from ai.vector import split_files
 from ai.vector import save_to_pinecone
 from ai.sql_chat_history import get_all_conversations
-from ai.integration.notion import NotionAPI, DatabaseParser
+from ai.integration.notion import NotionAPI, DatabaseParser, get_map_category, PageParser
+from config.settings import settings
 
 
 router = APIRouter(
@@ -95,14 +96,17 @@ def run_embedding_notion():
     Load all databases into vector db
     """
 
-    # session_id is not required here
-    # notion = NotionAPI(token=os.getenv("NOTION_API_KEY"), category=Categories.LEARNING)
-    # pages = notion.get_database_data(database_id=os.getenv("NOTION_RESOURCES_ID"))
-    # parse_pages = DatabaseParser().parse(pages)
-    #
-    # for page in parse_pages:
-    #     content = notion.get_page_content(page_id=page)
-    #
-    #     page_parser = PageParser()
-    #     parsed_content = page_parser.parse(content)
-    #     print(parsed_content)
+    mapper = get_map_category()
+    for category in mapper.keys():
+        for dbs in mapper[category]:
+            notion_api = NotionAPI(
+                token=settings.NOTION_API_KEY, category=category
+            )
+            pages = notion_api.get_database_data(database_id=dbs)
+            parse_pages = DatabaseParser().parse(pages)
+
+            for page in parse_pages:
+                content = notion_api.get_page_content(page_id=page)
+                page_parser = PageParser()
+                parsed_content = page_parser.parse(content)
+                print(parsed_content)
