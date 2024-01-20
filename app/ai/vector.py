@@ -43,7 +43,7 @@ class DataLoaderFactory:
         elif file_path.endswith(".md"):
             return UnstructuredMarkdownLoader(file_path)
         elif file_path.endswith(".txt"):
-            return TextLoader(file_path)
+            return TextLoader(file_path, encoding="utf-8")
         else:
             raise ValueError("Invalid file type")
 

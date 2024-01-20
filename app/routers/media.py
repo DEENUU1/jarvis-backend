@@ -20,7 +20,7 @@ router = APIRouter(
 
 
 @router.post("/file")
-def upload_file(file_category: FileCategory, uploaded_file: UploadFile = File(...)):
+def upload_file(file_category: str, uploaded_file: UploadFile = File(...)):
     """
     Endpoint for uploading a file, processing its content, and saving it to Pinecone.
     """
@@ -34,7 +34,7 @@ def upload_file(file_category: FileCategory, uploaded_file: UploadFile = File(..
         shutil.copyfileobj(uploaded_file.file, file)
 
     chunks = split_files(path)
-    save_to_pinecone(chunks, file_category.name)
+    save_to_pinecone(chunks, file_category)
     os.remove(path)
 
     return {"message": "Embedding completed"}
