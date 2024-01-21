@@ -1,4 +1,4 @@
-from langchain.agents import AgentExecutor, OpenAIFunctionsAgent  # initialize_agent, AgentType,
+from langchain.agents import AgentExecutor, OpenAIFunctionsAgent
 from langchain_community.utilities.duckduckgo_search import DuckDuckGoSearchAPIWrapper
 from langchain_core.messages import SystemMessage
 from langchain_core.prompts import MessagesPlaceholder
@@ -24,7 +24,37 @@ def setup_agent(session_id: str, model: str) -> AgentExecutor:
     personal_data = RetrievalQA.from_chain_type(
         llm=llm,
         chain_type="stuff",
-        retriever=get_pinecone(settings.PINECONE_PRIVATE_INDEX).as_retriever(),
+        retriever=get_pinecone(settings.PINECONE_PRIVATE_INDEX).as_retriever(
+            search_type="similarity",
+            search_kwargs={"k": 3}
+        ),
+    )
+
+    learning_data = RetrievalQA.from_chain_type(
+        llm=llm,
+        chain_type="stuff",
+        retriever=get_pinecone(settings.PINECONE_LEARNING_INDEX).as_retriever(
+            search_type="similarity",
+            search_kwargs={"k": 3}
+        )
+    )
+
+    work_data = RetrievalQA.from_chain_type(
+        llm=llm,
+        chain_type="stuff",
+        retriever=get_pinecone(settings.PINECONE_WORK_INDEX).as_retriever(
+            search_type="similarity",
+            search_kwargs={"k": 3}
+        )
+    )
+
+    it_data = RetrievalQA.from_chain_type(
+        llm=llm,
+        chain_type="stuff",
+        retriever=get_pinecone(settings.PINECONE_IT_INDEX).as_retriever(
+            search_type="similarity",
+            search_kwargs={"k": 3}
+        )
     )
 
     tools = [
@@ -37,6 +67,21 @@ def setup_agent(session_id: str, model: str) -> AgentExecutor:
             name="User-private-data",
             func=personal_data.run,
             description="Useful when you need to answer questions about user's personal data"
+        ),
+        Tool(
+            name="User-work-data",
+            func=work_data.run,
+            description="Useful when you need to answer about user's work like freelancing projects"
+        ),
+        Tool(
+            name="User-learning",
+            func=learning_data.run,
+            description="Useful when you need to answer about user's studies and learning resources like read articles, videos etc"
+        ),
+        Tool(
+            name="User-it",
+            func=it_data.run,
+            description="Useful when you need to answer about user's IT projects, computer science and other related fields "
         )
     ]
 
@@ -56,12 +101,3 @@ def setup_agent(session_id: str, model: str) -> AgentExecutor:
         verbose=True,
         handle_parsing_errors=True
     )
-
-    # return initialize_agent(
-    #     tools,
-    #     llm,
-    #     agent=AgentType.OPENAI_FUNCTIONS,
-    #     verbose=False,
-    #     agent_kwargs=agent_kwargs,
-    #     memory=memory
-    # )
