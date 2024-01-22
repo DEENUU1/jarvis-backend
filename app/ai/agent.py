@@ -11,6 +11,9 @@ from langchain.chains import RetrievalQA
 from .vector import get_pinecone
 import langchain
 from config.settings import settings
+# from langchain_community.utilities.openweathermap import OpenWeatherMapAPIWrapper
+from langchain.tools import WikipediaQueryRun
+from langchain_community.utilities import WikipediaAPIWrapper
 
 langchain.debug = True
 
@@ -57,7 +60,19 @@ def setup_agent(session_id: str, model: str) -> AgentExecutor:
         )
     )
 
+    # weather = OpenWeatherMapAPIWrapper(openweathermap_api_key=settings.OPENWEATHERAPP_API_KEY)
+    wikipedia = WikipediaQueryRun(api_wrapper=WikipediaAPIWrapper())
     tools = [
+        Tool(
+            name="Wikipedia",
+            func=wikipedia.run,
+            description="Useful when you need to answer questions about current events. You should ask targeted questions"
+        ),
+        # Tool(
+        #     name="Weather",
+        #     func=weather.run,
+        #     description="Useful for when you need to answer questions about current weather"
+        # ),
         Tool(
             name="Search",
             func=duckduck_search.run,

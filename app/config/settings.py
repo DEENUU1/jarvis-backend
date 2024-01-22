@@ -49,5 +49,6 @@ class Settings(BaseSettings):
     NOTION_UDEMY_ID: Optional[str] = os.getenv("NOTION_UDEMY_ID")
     NOTION_DODATKOWE_ID: Optional[str] = os.getenv("NOTION_DODATKOWE_ID")
 
+    OPENWEATHERAPP_API_KEY: Optional[str] = os.getenv("OPENWEATHERAPP_API_KEY")
 
 settings = Settings()
