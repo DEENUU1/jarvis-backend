@@ -51,4 +51,5 @@ class Settings(BaseSettings):
 
     OPENWEATHERAPP_API_KEY: Optional[str] = os.getenv("OPENWEATHERAPP_API_KEY")
 
+
 settings = Settings()
