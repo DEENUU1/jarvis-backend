@@ -3,6 +3,8 @@
 app/sqlite.db
 app/media/
 credentials.json
+app/credentials.json
+app/token.pickle
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

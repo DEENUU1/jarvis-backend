@@ -33,6 +33,7 @@ app.add_middleware(
 def startup_event() -> None:
     """
     On app start check if 'media' directory exists and if not create it
+    Create credentials.json file
     """
     if not os.path.exists("media"):
         print("Create media directory")
