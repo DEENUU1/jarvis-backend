@@ -58,7 +58,6 @@ class Settings(BaseSettings):
     GOOGLE_CALENDAR_STUDIA: Optional[str] = os.getenv("GOOGLE_CALENDAR_STUDIA")
     GOOGLE_CALENDAR_SUBSKRYPCJE_I_OPLATY: Optional[str] = os.getenv("GOOGLE_CALENDAR_SUBSKRYPCJE_I_OPLATY")
     GOOGLE_CALENDAR_URODZINY_ROCZNICE: Optional[str] = os.getenv("GOOGLE_CALENDAR_URODZINY_ROCZNICE")
-    GOOGLE_CALENDAR_SWIETA_W_POLSCE: Optional[str] = os.getenv("GOOGLE_CALENDAR_SWIETA_W_POLSCE")
 
     GOOGLE_CALENDARS: Dict[str, str] = {
             "Private": GOOGLE_CALENDAR_OSOBISTE,
@@ -66,7 +65,6 @@ class Settings(BaseSettings):
             "School": GOOGLE_CALENDAR_STUDIA,
             "Payments": GOOGLE_CALENDAR_SUBSKRYPCJE_I_OPLATY,
             "Celebrations": GOOGLE_CALENDAR_URODZINY_ROCZNICE,
-            "Polish_holidays": GOOGLE_CALENDAR_SWIETA_W_POLSCE
         }
 
     GOOGLE_CALENDAR_EMAIL: Optional[str] = os.getenv("GOOGLE_CALENDAR_EMAIL")

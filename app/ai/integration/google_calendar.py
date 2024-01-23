@@ -1,6 +1,6 @@
 from gcsa.google_calendar import GoogleCalendar
 from config.settings import settings
-from typing import List, Optional, Dict
+from typing import List, Optional, Dict, Any
 from gcsa.event import Event
 
 
@@ -15,8 +15,8 @@ class Calendar:
     def _get_calendars() -> Dict[str, str]:
         return settings.GOOGLE_CALENDARS
 
-    def get_all_events(self) -> List[Optional[Event]]:
-        events = []
+    def get_all_events(self) -> Optional[str]:
+        events = ""
         for calendar_id in self._calendar_ids.values():
             if self.debug:
                 print(f"Getting events from calendar {calendar_id}")
@@ -26,6 +26,24 @@ class Calendar:
                 if self.debug:
                     print(f"Event: {event.summary}")
 
-                events.append(event)
+                event_summary = event.summary
+                event_start = event.start
+                event_end = event.end
+                event_description = event.description
+                event_location = event.location
+
+                event_str = "Event: "
+                if event_summary:
+                    event_str += f"Title: {event_summary} "
+                if event_start:
+                    event_str += f"Start: {event_start} "
+                if event_end:
+                    event_str += f"End: {event_end} "
+                if event_description:
+                    event_str += f"Description: {event_description} "
+                if event_location:
+                    event_str += f"Location: {event_location} "
+
+                events += event_str + "\n"
 
         return events
