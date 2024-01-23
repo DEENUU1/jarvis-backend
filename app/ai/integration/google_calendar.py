@@ -6,7 +6,12 @@ from typing import Optional, Dict
 class Calendar:
 
     def __init__(self) -> None:
-        self._calendar = GoogleCalendar(settings.GOOGLE_CALENDAR_EMAIL, credentials_path="credentials.json", authentication_flow_port=8081)
+        self._calendar = GoogleCalendar(
+            settings.GOOGLE_CALENDAR_EMAIL,
+            credentials_path="credentials.json",
+            authentication_flow_port=8081,
+            authentication_flow_host="0.0.0.0"
+        )
         self._calendar_ids = settings.GOOGLE_CALENDARS
         self.debug: bool = settings.GOOGLE_CALENDAR_DEBUG
 
