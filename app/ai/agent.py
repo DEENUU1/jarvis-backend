@@ -14,6 +14,7 @@ from config.settings import settings
 from langchain_community.utilities.openweathermap import OpenWeatherMapAPIWrapper
 from langchain.tools import WikipediaQueryRun
 from langchain_community.utilities import WikipediaAPIWrapper
+from .tools import news
 
 langchain.debug = True
 
@@ -62,7 +63,14 @@ def setup_agent(session_id: str, model: str) -> AgentExecutor:
 
     weather = OpenWeatherMapAPIWrapper(openweathermap_api_key=settings.OPENWEATHERAPP_API_KEY)
     wikipedia = WikipediaQueryRun(api_wrapper=WikipediaAPIWrapper())
+    news_tool = news.NewsTool()
+
     tools = [
+        Tool(
+            name="News",
+            func=news_tool.run,
+            description="Useful for when you need to answer questions about current news"
+        ),
         Tool(
             name="Wikipedia",
             func=wikipedia.run,
