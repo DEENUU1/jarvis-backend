@@ -1,7 +1,6 @@
 from gcsa.google_calendar import GoogleCalendar
 from config.settings import settings
-from typing import List, Optional, Dict, Any
-from gcsa.event import Event
+from typing import Optional, Dict
 
 
 class Calendar:
@@ -47,3 +46,18 @@ class Calendar:
                 events += event_str + "\n"
 
         return events
+
+    def create_event(self) -> None:
+        pass
+
+    def search_event(self) -> None:
+        pass
+
+    def delete_event(self) -> None:
+        pass
+
+    def get_event(self) -> None:
+        pass
+
+    def update_event(self) -> None:
+        pass
