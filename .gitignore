@@ -2,6 +2,7 @@
 .idea/
 app/sqlite.db
 app/media/
+credentials.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

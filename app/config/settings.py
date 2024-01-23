@@ -1,5 +1,5 @@
 import os
-from typing import Literal, Optional, ClassVar
+from typing import Literal, Optional, ClassVar, Dict
 
 from dotenv import load_dotenv
 from pydantic_settings import BaseSettings
@@ -52,6 +52,26 @@ class Settings(BaseSettings):
     OPENWEATHERAPP_API_KEY: Optional[str] = os.getenv("OPENWEATHERAPP_API_KEY")
 
     NEWS_API: Optional[str] = os.getenv("NEWS_API")
+
+    GOOGLE_CALENDAR_OSOBISTE: Optional[str] = os.getenv("GOOGLE_CALENDAR_OSOBISTE")
+    GOOGLE_CALENDAR_PRACA: Optional[str] = os.getenv("GOOGLE_CALENDAR_PRACA")
+    GOOGLE_CALENDAR_STUDIA: Optional[str] = os.getenv("GOOGLE_CALENDAR_STUDIA")
+    GOOGLE_CALENDAR_SUBSKRYPCJE_I_OPLATY: Optional[str] = os.getenv("GOOGLE_CALENDAR_SUBSKRYPCJE_I_OPLATY")
+    GOOGLE_CALENDAR_URODZINY_ROCZNICE: Optional[str] = os.getenv("GOOGLE_CALENDAR_URODZINY_ROCZNICE")
+    GOOGLE_CALENDAR_SWIETA_W_POLSCE: Optional[str] = os.getenv("GOOGLE_CALENDAR_SWIETA_W_POLSCE")
+
+    GOOGLE_CALENDARS: Dict[str, str] = {
+            "Private": GOOGLE_CALENDAR_OSOBISTE,
+            "Work": GOOGLE_CALENDAR_PRACA,
+            "School": GOOGLE_CALENDAR_STUDIA,
+            "Payments": GOOGLE_CALENDAR_SUBSKRYPCJE_I_OPLATY,
+            "Celebrations": GOOGLE_CALENDAR_URODZINY_ROCZNICE,
+            "Polish_holidays": GOOGLE_CALENDAR_SWIETA_W_POLSCE
+        }
+
+    GOOGLE_CALENDAR_EMAIL: Optional[str] = os.getenv("GOOGLE_CALENDAR_EMAIL")
+
+    GOOGLE_CALENDAR_DEBUG: bool = os.getenv("GOOGLE_CALENDAR_DEBUG") == "True"
 
 
 settings = Settings()
