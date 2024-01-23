@@ -1,9 +1,4 @@
-from typing import Optional
-
-from langchain.callbacks.manager import (
-    AsyncCallbackManagerForToolRun,
-    CallbackManagerForToolRun,
-)
+from typing import Union, Dict, Tuple
 from langchain_core.tools import BaseTool
 from newsapi import NewsApiClient
 from config.settings import settings
@@ -31,13 +26,12 @@ class NewsTool(BaseTool):
     name = "news_tool"
     description = "Useful for when you need to answer questions about current news"
 
-    def _run(
-            self, run_manager: Optional[CallbackManagerForToolRun] = None
-    ) -> str:
+    def _to_args_and_kwargs(self, tool_input: Union[str, Dict]) -> Tuple[Tuple, Dict]:
+        return (), {}
+
+    def _run(self) -> str:
         return get_top_headlines_formatted()
 
-    async def _arun(
-            self, run_manager: Optional[AsyncCallbackManagerForToolRun] = None
-    ) -> str:
+    async def _arun(self) -> str:
         """Use the tool asynchronously."""
         raise NotImplementedError("custom_search does not support async")
