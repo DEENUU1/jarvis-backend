@@ -5,6 +5,7 @@ from starlette.middleware.cors import CORSMiddleware
 
 from config.settings import settings
 from routers import health, chat, media
+import google_auth
 
 # from config.database import engine, Base
 # Base.metadata.create_all(bind=engine)
@@ -39,3 +40,9 @@ def startup_event() -> None:
         print("Create media directory")
         os.mkdir("media")
         print("Media directory created")
+
+
+@app.get("/")
+def root():
+    google_auth.main()
+    return {"message": "Hello World"}
