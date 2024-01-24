@@ -13,7 +13,7 @@ from config.settings import settings
 from .llm import get_chat_openai
 from .memory import setup_memory
 from .prompt import prompt
-from .tools import news, today  # , google_calendar
+from .tools import news, today
 from .vector import get_pinecone
 
 langchain.debug = True
@@ -63,9 +63,6 @@ def setup_agent(session_id: str, model: str) -> AgentExecutor:
 
     weather = OpenWeatherMapAPIWrapper(openweathermap_api_key=settings.OPENWEATHERAPP_API_KEY)
     wikipedia = WikipediaQueryRun(api_wrapper=WikipediaAPIWrapper())
-    news_tool = news.NewsTool()
-    # google_calendar_list_event = google_calendar.GoogleCalendarListEventTool()
-    current_time = today.CurrentTimeTool()
 
     tools = [
         # Tool(
@@ -73,16 +70,8 @@ def setup_agent(session_id: str, model: str) -> AgentExecutor:
         #     func=google_calendar_list_event.run,
         #     description="Useful for when you need to answer questions about events from Google calendar"
         # ),
-        Tool(
-            name="CurrentTime",
-            func=current_time.run,
-            description="Useful for when you need to answer questions about current time"
-        ),
-        Tool(
-            name="News",
-            func=news_tool.run,
-            description="Useful for when you need to answer questions about current news"
-        ),
+        today.CurrentTimeTool(),
+        news.NewsTool(),
         Tool(
             name="Wikipedia",
             func=wikipedia.run,

@@ -5,7 +5,7 @@ from starlette.middleware.cors import CORSMiddleware
 
 from config.settings import settings
 from routers import health, chat, media
-from integration.google_auth import get_credentials
+# from integration.google_auth import get_credentials
 # from config.database import engine, Base
 # Base.metadata.create_all(bind=engine)
 

@@ -9,7 +9,7 @@ def get_current_time():
 
 class CurrentTimeTool(BaseTool):
     name = "current_time_tool"
-    description = "Useful for when you need to answer questions about current time"
+    description = "Useful for when you need to answer questions about current date and time"
 
     def _to_args_and_kwargs(self, tool_input: Union[str, Dict]) -> Tuple[Tuple, Dict]:
         return (), {}
