@@ -5,8 +5,7 @@ from starlette.middleware.cors import CORSMiddleware
 
 from config.settings import settings
 from routers import health, chat, media
-import google_auth
-
+from integration.google_auth import get_credentials
 # from config.database import engine, Base
 # Base.metadata.create_all(bind=engine)
 
@@ -16,6 +15,7 @@ app = FastAPI(
     title=settings.TITLE,
 )
 
+get_credentials()
 app.include_router(health.router)
 app.include_router(chat.router)
 app.include_router(media.router)
@@ -34,15 +34,8 @@ app.add_middleware(
 def startup_event() -> None:
     """
     On app start check if 'media' directory exists and if not create it
-    Create credentials.json file
     """
     if not os.path.exists("media"):
         print("Create media directory")
         os.mkdir("media")
         print("Media directory created")
-
-
-@app.get("/")
-def root():
-    google_auth.main()
-    return {"message": "Hello World"}

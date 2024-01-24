@@ -4,12 +4,11 @@ from fastapi import APIRouter
 from fastapi import File, UploadFile
 from fastapi import Response
 
-from ai.integration.notion import notion, get_map_category
+from integration.notion import notion, get_map_category
 from ai.sql_chat_history import get_all_conversations
 from ai.vector import save_to_pinecone
 from ai.vector import split_files
 from config.settings import settings
-from schemas.media import FileCategory
 
 import os
 
