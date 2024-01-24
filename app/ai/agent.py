@@ -1,20 +1,20 @@
+import langchain
 from langchain.agents import AgentExecutor, OpenAIFunctionsAgent
+from langchain.chains import RetrievalQA
+from langchain.tools import WikipediaQueryRun
+from langchain_community.utilities import WikipediaAPIWrapper
 from langchain_community.utilities.duckduckgo_search import DuckDuckGoSearchAPIWrapper
+from langchain_community.utilities.openweathermap import OpenWeatherMapAPIWrapper
 from langchain_core.messages import SystemMessage
 from langchain_core.prompts import MessagesPlaceholder
 from langchain_core.tools import Tool
 
+from config.settings import settings
 from .llm import get_chat_openai
 from .memory import setup_memory
 from .prompt import prompt
-from langchain.chains import RetrievalQA
+from .tools import news, today  # , google_calendar
 from .vector import get_pinecone
-import langchain
-from config.settings import settings
-from langchain_community.utilities.openweathermap import OpenWeatherMapAPIWrapper
-from langchain.tools import WikipediaQueryRun
-from langchain_community.utilities import WikipediaAPIWrapper
-from .tools import news #, google_calendar
 
 langchain.debug = True
 
@@ -65,6 +65,7 @@ def setup_agent(session_id: str, model: str) -> AgentExecutor:
     wikipedia = WikipediaQueryRun(api_wrapper=WikipediaAPIWrapper())
     news_tool = news.NewsTool()
     # google_calendar_list_event = google_calendar.GoogleCalendarListEventTool()
+    current_time = today.CurrentTimeTool()
 
     tools = [
         # Tool(
@@ -72,6 +73,11 @@ def setup_agent(session_id: str, model: str) -> AgentExecutor:
         #     func=google_calendar_list_event.run,
         #     description="Useful for when you need to answer questions about events from Google calendar"
         # ),
+        Tool(
+            name="CurrentTime",
+            func=current_time.run,
+            description="Useful for when you need to answer questions about current time"
+        ),
         Tool(
             name="News",
             func=news_tool.run,
