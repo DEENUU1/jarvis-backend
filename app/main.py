@@ -15,7 +15,7 @@ app = FastAPI(
     title=settings.TITLE,
 )
 
-get_credentials()
+# get_credentials()
 app.include_router(health.router)
 app.include_router(chat.router)
 app.include_router(media.router)
