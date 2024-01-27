@@ -7,5 +7,5 @@ class Notion(Base):
 
     id = Column(Integer, primary_key=True)
     content = Column(String)
-    embedded_at = Column(DateTime)
-    updated_at = Column(DateTime)
+    embedded_at = Column(DateTime, nullable=True, default=None)
+    updated_at = Column(DateTime, nullable=True, default=None)
