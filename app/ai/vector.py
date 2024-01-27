@@ -15,18 +15,18 @@ def get_embedding_func() -> OpenAIEmbeddings:
     return OpenAIEmbeddings(openai_api_key=settings.OPENAI_KEY)
 
 
-def save_to_pinecone(data: List[Document], index_name: str):
+def save_to_pinecone(data: List[Document]):
     vector_db = Pinecone.from_documents(
         data,
         get_embedding_func(),
-        index_name=index_name,
+        index_name=settings.PINECONE_INDEX,
     )
     return vector_db
 
 
-def get_pinecone(index_name: str) -> Pinecone:
+def get_pinecone() -> Pinecone:
     return Pinecone.from_existing_index(
-        index_name=index_name,
+        index_name=settings.PINECONE_INDEX,
         embedding=get_embedding_func(),
     )
 

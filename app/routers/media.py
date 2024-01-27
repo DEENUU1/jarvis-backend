@@ -19,7 +19,7 @@ router = APIRouter(
 
 
 @router.post("/file")
-def upload_file(file_category: str, uploaded_file: UploadFile = File(...)):
+def upload_file(uploaded_file: UploadFile = File(...)):
     """
     Endpoint for uploading a file, processing its content, and saving it to Pinecone.
     """
@@ -33,7 +33,7 @@ def upload_file(file_category: str, uploaded_file: UploadFile = File(...)):
         shutil.copyfileobj(uploaded_file.file, file)
 
     chunks = split_files(path)
-    save_to_pinecone(chunks, file_category)
+    save_to_pinecone(chunks)
     os.remove(path)
 
     return {"message": "Embedding completed"}
@@ -47,7 +47,7 @@ def run_embedding_chat():
     conversations = get_all_conversations()
     for conversation in conversations:
         chunks = split_files(data=conversation)
-        save_to_pinecone(chunks, settings.PINECONE_PRIVATE_INDEX)
+        save_to_pinecone(chunks)
 
     return {"message": "Embedding completed"}
 
@@ -67,6 +67,6 @@ def run_embedding_notion():
             for content in parsed_pages:
                 if content:
                     chunks = split_files(data=content)
-                    save_to_pinecone(chunks, category.value)
+                    save_to_pinecone(chunks)
 
     return {"message": "Embedding completed"}
