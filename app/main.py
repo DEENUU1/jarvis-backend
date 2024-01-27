@@ -4,8 +4,8 @@ from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
 from config.settings import settings
-from routers import health, chat, media
 from config.database import engine, Base
+from routers.api import router
 
 
 Base.metadata.create_all(bind=engine)
@@ -15,10 +15,7 @@ app = FastAPI(
     title=settings.TITLE,
 )
 
-# get_credentials()
-app.include_router(health.router)
-app.include_router(chat.router)
-app.include_router(media.router)
+app.include_router(router)
 
 origins = ["http://localhost:3000"]
 app.add_middleware(
