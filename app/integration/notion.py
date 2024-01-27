@@ -1,6 +1,5 @@
 import json
 from abc import ABC, abstractmethod
-from enum import Enum
 from typing import Any, Optional, List, Dict
 
 import requests
@@ -9,57 +8,8 @@ from pydantic import Json, BaseModel
 from config.settings import settings
 
 
-class Categories(Enum):
-    """
-    Name of category based on data collected in notion database
-    While using Pinecone the name of the category should have the same name as a index in vector database
-    """
-    LEARNING = settings.PINECONE_LEARNING_INDEX
-    WORK = settings.PINECONE_WORK_INDEX
-    PRIVATE = settings.PINECONE_PRIVATE_INDEX
-    IT = settings.PINECONE_IT_INDEX
-
-
-def get_map_category() -> Dict[Categories, List[str]]:
-    """
-    Retrieve a mapping of Categories to corresponding Notion IDs for organization.
-    """
-    map = {
-        Categories.LEARNING: [
-            settings.NOTION_RESOURCES_ID,
-            settings.NOTION_LEARNING_ID,
-            settings.NOTION_I_SEMESTR_ID,
-        ],
-        Categories.WORK: [
-            settings.NOTION_USEME_ID,
-            settings.NOTION_AS_ID,
-            settings.NOTION_UDEMY_ID,
-            settings.NOTION_DODATKOWE_ID
-        ],
-        Categories.PRIVATE: [
-            settings.NOTION_NOTES_ID,
-            settings.NOTION_BOOKS_ID,
-            settings.NOTION_QUOTES_ID
-        ],
-        Categories.IT: [
-            settings.NOTION_PROJECTS_ID,
-            settings.NOTION_PROGRAMMING_ID,
-            settings.NOTION_DATASTRUCTURES_ID,
-            settings.NOTION_ALGORITHMS_ID,
-            settings.NOTION_TLACYWN_ID,
-            settings.NOTION_COMPUTERS_ID,
-        ]
-    }
-
-    if settings.NOTION_DEBUG:
-        print(map)
-
-    return map
-
-
 class Data(BaseModel):
     data: Json[Any]
-    category: Optional[str] = None
 
 
 class NotionAPI:
@@ -69,7 +19,7 @@ class NotionAPI:
     """
     BASE_URL: str = "https://api.notion.com/v1/"
 
-    def __init__(self, token: str, category: Optional[Categories] = None) -> None:
+    def __init__(self, token: str) -> None:
         """
         Initializes a NotionAPI instance.
         """
@@ -78,11 +28,10 @@ class NotionAPI:
             "Content-Type": "application/json",
             "Notion-Version": "2022-06-28"
         }
-        self.category = category.value
         self.debug = settings.NOTION_DEBUG
 
         if self.debug:
-            print(f"Run NotionAPI for {self.category}")
+            print(f"Run NotionAPI")
 
     def get_database_data(self, database_id: str) -> Optional[Data]:
         """
@@ -98,7 +47,7 @@ class NotionAPI:
             if self.debug:
                 print(json_data)
 
-            return Data(category=self.category, data=json_data)
+            return Data(data=json_data)
         except Exception as e:
             print(e)
 
@@ -116,7 +65,7 @@ class NotionAPI:
             if self.debug:
                 print(json_data)
 
-            return Data(category=self.category, data=json_data)
+            return Data(data=json_data)
         except Exception as e:
             print(e)
 
@@ -132,6 +81,7 @@ class Parser(ABC):
         __init__(self): Initializes a Parser instance.
         parse(self, response) -> None: Abstract method to be implemented by subclasses for parsing responses.
     """
+
     def __init__(self):
         """
         Initializes a Parser instance.
@@ -150,6 +100,7 @@ class DatabaseParser(Parser):
     """
     Concrete class for parsing Notion database responses.
     """
+
     def parse(self, data: Data) -> List[Optional[str]]:
         """
         Parses Notion database data.
@@ -237,19 +188,18 @@ class PageParser(Parser):
         return text
 
 
-def notion(category: Categories, dbs: str) -> List[Optional[str]]:
+def notion(dbs: str) -> List[Optional[str]]:
     """
     Retrieves and parses Notion data for a given category and database.
 
     Parameters:
-        category (Categories): The category of Notion data to interact with.
         dbs (str): The unique identifier of the Notion database.
 
     Returns:
         List[Optional[str]]: A list of parsed content from Notion pages.
     """
     notion_api = NotionAPI(
-        token=settings.NOTION_API_KEY, category=category
+        token=settings.NOTION_API_KEY
     )
     pages = notion_api.get_database_data(database_id=dbs)
     parse_pages = DatabaseParser().parse(pages)

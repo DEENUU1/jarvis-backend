@@ -1,16 +1,15 @@
+import os
 import shutil
 
 from fastapi import APIRouter
 from fastapi import File, UploadFile
 from fastapi import Response
 
-from integration.notion import notion, get_map_category
 from ai.sql_chat_history import get_all_conversations
 from ai.vector import save_to_pinecone
 from ai.vector import split_files
 from config.settings import settings
-
-import os
+from integration.notion import notion
 
 router = APIRouter(
     prefix="/media",
@@ -57,16 +56,11 @@ def run_embedding_notion():
     """
     Endpoint to load all databases into vector db
     """
-    mapper = get_map_category()
-    for category in mapper.keys():
-        for dbs in mapper[category]:
-            parsed_pages = notion(
-                category=category,
-                dbs=dbs
-            )
-            for content in parsed_pages:
-                if content:
-                    chunks = split_files(data=content)
-                    save_to_pinecone(chunks)
+    for dbs in settings.NOTION_DATABASES:
+        parsed_pages = notion(dbs=dbs)
+        for content in parsed_pages:
+            if content:
+                chunks = split_files(data=content)
+                save_to_pinecone(chunks)
 
     return {"message": "Embedding completed"}

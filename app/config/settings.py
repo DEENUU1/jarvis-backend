@@ -1,5 +1,5 @@
 import os
-from typing import Literal, Optional, ClassVar, Dict
+from typing import Literal, Optional, ClassVar, Dict, List
 
 from dotenv import load_dotenv
 from pydantic_settings import BaseSettings
@@ -29,22 +29,7 @@ class Settings(BaseSettings):
     # INTEGRATION
     NOTION_DEBUG: bool = os.getenv("NOTION_DEBUG") == "True"
     NOTION_API_KEY: Optional[str] = os.getenv("NOTION_API_KEY")
-    NOTION_NOTES_ID: Optional[str] = os.getenv("NOTION_NOTES_ID")
-    NOTION_RESOURCES_ID: Optional[str] = os.getenv("NOTION_RESOURCES_ID")
-    NOTION_LEARNING_ID: Optional[str] = os.getenv("NOTION_LEARNING_ID")
-    NOTION_PROJECTS_ID: Optional[str] = os.getenv("NOTION_PROJECTS_ID")
-    NOTION_PROGRAMMING_ID: Optional[str] = os.getenv("NOTION_PROGRAMMING_ID")
-    NOTION_DATASTRUCTURES_ID: Optional[str] = os.getenv("NOTION_DATASTRUCTURES_ID")
-    NOTION_ALGORITHMS_ID: Optional[str] = os.getenv("NOTION_ALGORITHMS_ID")
-    NOTION_TLACYWN_ID: Optional[str] = os.getenv("NOTION_TLACYWN_ID")
-    NOTION_COMPUTERS_ID: Optional[str] = os.getenv("NOTION_COMPUTERS_ID")
-    NOTION_I_SEMESTR_ID: Optional[str] = os.getenv("NOTION_I_SEMESTR_ID")
-    NOTION_BOOKS_ID: Optional[str] = os.getenv("NOTION_BOOKS_ID")
-    NOTION_QUOTES_ID: Optional[str] = os.getenv("NOTION_QUOTES_ID")
-    NOTION_USEME_ID: Optional[str] = os.getenv("NOTION_USEME_ID")
-    NOTION_AS_ID: Optional[str] = os.getenv("NOTION_AS_ID")
-    NOTION_UDEMY_ID: Optional[str] = os.getenv("NOTION_UDEMY_ID")
-    NOTION_DODATKOWE_ID: Optional[str] = os.getenv("NOTION_DODATKOWE_ID")
+    NOTION_DATABASES: ClassVar = [db.strip() for db in os.getenv("NOTION_DATABASES", "").split(",") if db.strip()]
 
     OPENWEATHERAPP_API_KEY: Optional[str] = os.getenv("OPENWEATHERAPP_API_KEY")
 
