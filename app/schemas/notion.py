@@ -7,7 +7,7 @@ class NotionSchema(BaseModel):
     page_id: str
     content: Optional[str] = None
     embedded_at:  Optional[datetime] = None
-    updated_at: Optional[datetime] = None
+    updated_at: datetime
 
 
 class NotionCreateSchema(BaseModel):

@@ -11,6 +11,7 @@ from integration.notion import notion
 from services import notion as ns
 from sqlalchemy.orm import Session
 from schemas.notion import NotionCreateSchema, NotionUpdateSchema
+from datetime import datetime, timezone
 
 
 router = APIRouter(
@@ -64,8 +65,9 @@ def run_notion(db: Session = Depends(get_db)):
             if page:
                 if ns.notion_object_exist(db, page_id=page.page_id):
                     existing_object = ns.get_notion_object_by_page_id(db, page_id=page.page_id)
+                    existing_object_updated_at = existing_object.updated_at.replace(tzinfo=timezone.utc)
 
-                    if existing_object.updated_at < page.updated_at:
+                    if existing_object_updated_at < page.updated_at:
                         ns.update_notion_content(
                             session=db,
                             page_id=page.page_id,
