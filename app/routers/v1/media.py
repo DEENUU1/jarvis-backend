@@ -102,6 +102,11 @@ def run_notion_embedding(db: Session = Depends(get_db)):
         if notion_object.embedded_at is None or notion_object.embedded_at < notion_object.updated_at:
             chunks = split_files(data=notion_object.content)
             save_to_pinecone(chunks)
+            ns.update_notion_embedding(
+                session=db,
+                page_id=notion_object.page_id
+            )
+            print("Updated")
         else:
             print(f"Skip embedding for page {notion_object.page_id}")
             continue

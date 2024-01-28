@@ -4,6 +4,7 @@ from schemas.notion import NotionSchema, NotionCreateSchema, NotionUpdateSchema,
 from typing import Type, List
 from config.database import NotFoundError
 from models.notion import Notion
+from datetime import datetime
 
 
 def create_notion_object(session: Session, data: NotionCreateSchema) -> NotionCreateSchema:
@@ -40,9 +41,9 @@ def update_notion_content(session: Session, page_id: str, data: NotionUpdateSche
     return notion
 
 
-def update_notion_embedding(session: Session, page_id: str, data: NotionEmbeddUpdateSchema) -> Type[NotionSchema]:
+def update_notion_embedding(session: Session, page_id: str) -> Type[NotionSchema]:
     notion = get_notion_object_by_page_id(session, page_id)
-    notion.embedding = data.embedded_at
+    notion.embedded_at = datetime.now()
     session.commit()
     session.refresh(notion)
     return notion
