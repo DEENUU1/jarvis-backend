@@ -1,4 +1,4 @@
-from typing import Type, Optional
+from typing import Type, Optional, List
 
 import requests
 from langchain_core.tools import BaseTool
@@ -8,7 +8,6 @@ from config.settings import settings
 
 
 class GoogleCalendarCreateEventInput(BaseModel):
-    """Inputs for creating Notion Note page """
     calendar_type: str = Field(
         description=f"Type of calendar in which you can create event, choose based on context or user input. "
                     f"You can use: {settings.GOOGLE_CALENDAR_NAMES}"
@@ -20,6 +19,10 @@ class GoogleCalendarCreateEventInput(BaseModel):
     duration: Optional[str] = Field(
         description="Duration of the event in format HH:mm use only when user gives use duration of an event"
     )
+
+
+class GoogleCalendarListEventInput(BaseModel):
+    start_date: str = Field(description="Start date of the event in format 'YYYY-MM-DD'")
 
 
 class GoogleCalendarCreateEventTool(BaseTool):
@@ -34,11 +37,11 @@ class GoogleCalendarCreateEventTool(BaseTool):
             all_day: bool,
             start_date: str,
             end_date: Optional[str] = None,
-            duration: Optional[str] = None
+            duration: Optional[str] = None,
     ):
         try:
             return requests.post(
-                settings.MAKE_GOOGLE_CALENDAR_CREATE_EVENT,
+                settings.MAKE_GOOGLE_CALENDAR_CREATE_LIST_EVENT,
                 data={
                     "calendar_type": calendar_type,
                     "event_name": event_name,
@@ -46,6 +49,7 @@ class GoogleCalendarCreateEventTool(BaseTool):
                     "start_date": start_date,
                     "end_date": end_date,
                     "duration": duration,
+                    "operation": "create"  # hard coded value based on routing in make.com
                 }
             )
         except Exception as e:
@@ -53,3 +57,37 @@ class GoogleCalendarCreateEventTool(BaseTool):
 
     def _arun(self, url: str):
         raise NotImplementedError("error here")
+
+
+class GoogleCalendarListEventTool(BaseTool):
+    name = "google_calendar_list_event_tool"
+    description = "Useful when you need to answer about events in Google Calendar"
+    args_schema: Type[BaseModel] = GoogleCalendarListEventInput
+
+    def _run(
+            self,
+            start_date: str,
+    ):
+        return self.get_events_from_all_calendars(start_date=start_date)
+
+    def _arun(self, url: str):
+        raise NotImplementedError("error here")
+
+    @staticmethod
+    def get_events_from_all_calendars(start_date: str) -> List:
+        result = []
+
+        calendars = settings.GOOGLE_CALENDAR_NAMES.split(",")
+        for calendar in calendars:
+            response = requests.post(
+                settings.MAKE_GOOGLE_CALENDAR_CREATE_LIST_EVENT,
+                data={
+                    "start_date": start_date,
+                    "calendar_type": calendar,
+                    "operation": "list"  # Hard coded value based on routing in make.com,
+                }
+            )
+            result.append(response.json())
+
+        return result
+
