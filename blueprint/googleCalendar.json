@@ -1,0 +1,1873 @@
+{
+    "name": "Jarvis Google Calendar Create & List Event",
+    "flow": [
+        {
+            "id": 17,
+            "module": "gateway:CustomWebHook",
+            "version": 1,
+            "parameters": {
+                "hook": 322346,
+                "maxResults": 1
+            },
+            "mapper": {},
+            "metadata": {
+                "designer": {
+                    "x": -1152,
+                    "y": -328
+                },
+                "restore": {
+                    "parameters": {
+                        "hook": {
+                            "data": {
+                                "editable": "true"
+                            },
+                            "label": "Google Calendar List Event"
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "hook",
+                        "type": "hook:gateway-webhook",
+                        "label": "Webhook",
+                        "required": true
+                    },
+                    {
+                        "name": "maxResults",
+                        "type": "number",
+                        "label": "Maximum number of results"
+                    }
+                ],
+                "interface": [
+                    {
+                        "name": "calendar_type",
+                        "type": "text"
+                    },
+                    {
+                        "name": "start_date",
+                        "type": "text"
+                    },
+                    {
+                        "name": "event_name",
+                        "type": "text"
+                    },
+                    {
+                        "name": "all_day",
+                        "type": "text"
+                    },
+                    {
+                        "name": "end_date",
+                        "type": "text"
+                    },
+                    {
+                        "name": "duration",
+                        "type": "text"
+                    },
+                    {
+                        "name": "operation",
+                        "type": "text"
+                    },
+                    {
+                        "name": "__IMTMETHOD__",
+                        "type": "text",
+                        "label": "Method"
+                    }
+                ]
+            }
+        },
+        {
+            "id": 31,
+            "module": "builtin:BasicRouter",
+            "version": 1,
+            "mapper": null,
+            "metadata": {
+                "designer": {
+                    "x": -592,
+                    "y": -326
+                }
+            },
+            "routes": [
+                {
+                    "flow": [
+                        {
+                            "id": 18,
+                            "module": "builtin:BasicRouter",
+                            "version": 1,
+                            "filter": {
+                                "name": "list",
+                                "conditions": [
+                                    [
+                                        {
+                                            "a": "{{17.operation}}",
+                                            "b": "list",
+                                            "o": "text:equal"
+                                        }
+                                    ]
+                                ]
+                            },
+                            "mapper": null,
+                            "metadata": {
+                                "designer": {
+                                    "x": -599,
+                                    "y": 246
+                                }
+                            },
+                            "routes": [
+                                {
+                                    "flow": [
+                                        {
+                                            "id": 19,
+                                            "module": "google-calendar:searchEvents",
+                                            "version": 5,
+                                            "parameters": {
+                                                "__IMTCONN__": 941236
+                                            },
+                                            "filter": {
+                                                "name": "Osobiste",
+                                                "conditions": [
+                                                    [
+                                                        {
+                                                            "a": "{{17.calendar_type}}",
+                                                            "b": "osobiste",
+                                                            "o": "text:equal"
+                                                        }
+                                                    ]
+                                                ]
+                                            },
+                                            "mapper": {
+                                                "limit": "100",
+                                                "timeMin": "{{17.start_date}}",
+                                                "calendar": "a6b2348ed56e57bf221e524ae3483eefb569e50ad24d8e9c984c53c74951b029@group.calendar.google.com",
+                                                "singleEvents": false
+                                            },
+                                            "metadata": {
+                                                "designer": {
+                                                    "x": -64,
+                                                    "y": 61
+                                                },
+                                                "restore": {
+                                                    "expect": {
+                                                        "orderBy": {
+                                                            "mode": "chose",
+                                                            "label": "Empty"
+                                                        },
+                                                        "calendar": {
+                                                            "mode": "chose",
+                                                            "label": "Osobiste"
+                                                        }
+                                                    },
+                                                    "parameters": {
+                                                        "__IMTCONN__": {
+                                                            "data": {
+                                                                "scoped": "true",
+                                                                "connection": "google"
+                                                            },
+                                                            "label": "My Google connection (kacperwlodarczyk@protonmail.com)"
+                                                        }
+                                                    }
+                                                },
+                                                "parameters": [
+                                                    {
+                                                        "name": "__IMTCONN__",
+                                                        "type": "account:google",
+                                                        "label": "Connection",
+                                                        "required": true
+                                                    }
+                                                ],
+                                                "expect": [
+                                                    {
+                                                        "name": "calendar",
+                                                        "type": "select",
+                                                        "label": "Calendar ID",
+                                                        "required": true
+                                                    },
+                                                    {
+                                                        "name": "timeMin",
+                                                        "time": true,
+                                                        "type": "date",
+                                                        "label": "Start Date"
+                                                    },
+                                                    {
+                                                        "name": "timeMax",
+                                                        "time": true,
+                                                        "type": "date",
+                                                        "label": "End Date"
+                                                    },
+                                                    {
+                                                        "name": "updatedMin",
+                                                        "time": true,
+                                                        "type": "date",
+                                                        "label": "Updated from"
+                                                    },
+                                                    {
+                                                        "name": "singleEvents",
+                                                        "type": "boolean",
+                                                        "label": "Single Events",
+                                                        "required": true
+                                                    },
+                                                    {
+                                                        "name": "q",
+                                                        "type": "text",
+                                                        "label": "Query"
+                                                    },
+                                                    {
+                                                        "name": "orderBy",
+                                                        "type": "select",
+                                                        "label": "Order By",
+                                                        "validate": {
+                                                            "enum": [
+                                                                "startTime",
+                                                                "updated"
+                                                            ]
+                                                        }
+                                                    },
+                                                    {
+                                                        "name": "limit",
+                                                        "type": "uinteger",
+                                                        "label": "Limit"
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        {
+                                            "id": 22,
+                                            "module": "json:AggregateToJSON",
+                                            "version": 1,
+                                            "parameters": {
+                                                "type": 30720,
+                                                "space": "",
+                                                "feeder": 19
+                                            },
+                                            "mapper": {
+                                                "End": "{{19.end}}",
+                                                "Start": "{{19.start}}",
+                                                "Summary": "{{19.summary}}",
+                                                "Location": "{{19.location}}"
+                                            },
+                                            "metadata": {
+                                                "designer": {
+                                                    "x": 539,
+                                                    "y": 60
+                                                },
+                                                "restore": {
+                                                    "extra": {
+                                                        "feeder": {
+                                                            "label": "Google Calendar - Search Events [19]"
+                                                        }
+                                                    },
+                                                    "parameters": {
+                                                        "type": {
+                                                            "label": "My data structure"
+                                                        },
+                                                        "space": {
+                                                            "label": "Empty"
+                                                        }
+                                                    }
+                                                },
+                                                "parameters": [
+                                                    {
+                                                        "name": "type",
+                                                        "type": "udt",
+                                                        "label": "Data structure",
+                                                        "required": true
+                                                    },
+                                                    {
+                                                        "name": "space",
+                                                        "type": "select",
+                                                        "label": "Indentation",
+                                                        "validate": {
+                                                            "enum": [
+                                                                "tab",
+                                                                "2",
+                                                                "4"
+                                                            ]
+                                                        }
+                                                    }
+                                                ],
+                                                "expect": [
+                                                    {
+                                                        "name": "Summary",
+                                                        "type": "text",
+                                                        "label": null,
+                                                        "required": true
+                                                    },
+                                                    {
+                                                        "name": "Start",
+                                                        "type": "date",
+                                                        "label": null,
+                                                        "required": true
+                                                    },
+                                                    {
+                                                        "name": "End",
+                                                        "type": "date",
+                                                        "label": null,
+                                                        "required": true
+                                                    },
+                                                    {
+                                                        "name": "Location",
+                                                        "type": "text",
+                                                        "label": null
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        {
+                                            "id": 24,
+                                            "module": "gateway:WebhookRespond",
+                                            "version": 1,
+                                            "parameters": {},
+                                            "mapper": {
+                                                "body": "{{22.json}}",
+                                                "status": "200",
+                                                "headers": []
+                                            },
+                                            "metadata": {
+                                                "designer": {
+                                                    "x": 1124,
+                                                    "y": 59
+                                                },
+                                                "restore": {
+                                                    "expect": {
+                                                        "headers": {
+                                                            "mode": "chose"
+                                                        }
+                                                    }
+                                                },
+                                                "expect": [
+                                                    {
+                                                        "name": "status",
+                                                        "type": "uinteger",
+                                                        "label": "Status",
+                                                        "required": true,
+                                                        "validate": {
+                                                            "min": 100
+                                                        }
+                                                    },
+                                                    {
+                                                        "name": "body",
+                                                        "type": "any",
+                                                        "label": "Body"
+                                                    },
+                                                    {
+                                                        "name": "headers",
+                                                        "spec": [
+                                                            {
+                                                                "name": "key",
+                                                                "type": "text",
+                                                                "label": "Key",
+                                                                "required": true,
+                                                                "validate": {
+                                                                    "max": 256
+                                                                }
+                                                            },
+                                                            {
+                                                                "name": "value",
+                                                                "type": "text",
+                                                                "label": "Value",
+                                                                "required": true,
+                                                                "validate": {
+                                                                    "max": 4096
+                                                                }
+                                                            }
+                                                        ],
+                                                        "type": "array",
+                                                        "label": "Custom headers",
+                                                        "validate": {
+                                                            "maxItems": 16
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    ]
+                                },
+                                {
+                                    "flow": [
+                                        {
+                                            "id": 25,
+                                            "module": "google-calendar:searchEvents",
+                                            "version": 5,
+                                            "parameters": {
+                                                "__IMTCONN__": 941236
+                                            },
+                                            "filter": {
+                                                "name": "Praca",
+                                                "conditions": [
+                                                    [
+                                                        {
+                                                            "a": "{{17.calendar_type}}",
+                                                            "b": "praca",
+                                                            "o": "text:equal"
+                                                        }
+                                                    ]
+                                                ]
+                                            },
+                                            "mapper": {
+                                                "limit": "100",
+                                                "timeMin": "{{17.start_date}}",
+                                                "calendar": "53dac8e89a0fb540734763a85f598db17e0b756cb6225fa5656f994fd6cc05d7@group.calendar.google.com",
+                                                "singleEvents": false
+                                            },
+                                            "metadata": {
+                                                "designer": {
+                                                    "x": -62,
+                                                    "y": 352
+                                                },
+                                                "restore": {
+                                                    "expect": {
+                                                        "orderBy": {
+                                                            "mode": "chose",
+                                                            "label": "Empty"
+                                                        },
+                                                        "calendar": {
+                                                            "mode": "chose",
+                                                            "label": "Praca"
+                                                        }
+                                                    },
+                                                    "parameters": {
+                                                        "__IMTCONN__": {
+                                                            "data": {
+                                                                "scoped": "true",
+                                                                "connection": "google"
+                                                            },
+                                                            "label": "My Google connection (kacperwlodarczyk@protonmail.com)"
+                                                        }
+                                                    }
+                                                },
+                                                "parameters": [
+                                                    {
+                                                        "name": "__IMTCONN__",
+                                                        "type": "account:google",
+                                                        "label": "Connection",
+                                                        "required": true
+                                                    }
+                                                ],
+                                                "expect": [
+                                                    {
+                                                        "name": "calendar",
+                                                        "type": "select",
+                                                        "label": "Calendar ID",
+                                                        "required": true
+                                                    },
+                                                    {
+                                                        "name": "timeMin",
+                                                        "time": true,
+                                                        "type": "date",
+                                                        "label": "Start Date"
+                                                    },
+                                                    {
+                                                        "name": "timeMax",
+                                                        "time": true,
+                                                        "type": "date",
+                                                        "label": "End Date"
+                                                    },
+                                                    {
+                                                        "name": "updatedMin",
+                                                        "time": true,
+                                                        "type": "date",
+                                                        "label": "Updated from"
+                                                    },
+                                                    {
+                                                        "name": "singleEvents",
+                                                        "type": "boolean",
+                                                        "label": "Single Events",
+                                                        "required": true
+                                                    },
+                                                    {
+                                                        "name": "q",
+                                                        "type": "text",
+                                                        "label": "Query"
+                                                    },
+                                                    {
+                                                        "name": "orderBy",
+                                                        "type": "select",
+                                                        "label": "Order By",
+                                                        "validate": {
+                                                            "enum": [
+                                                                "startTime",
+                                                                "updated"
+                                                            ]
+                                                        }
+                                                    },
+                                                    {
+                                                        "name": "limit",
+                                                        "type": "uinteger",
+                                                        "label": "Limit"
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        {
+                                            "id": 27,
+                                            "module": "json:AggregateToJSON",
+                                            "version": 1,
+                                            "parameters": {
+                                                "type": 30720,
+                                                "space": "",
+                                                "feeder": 25
+                                            },
+                                            "mapper": {
+                                                "End": "{{25.end}}",
+                                                "Start": "{{25.start}}",
+                                                "Summary": "{{25.summary}}",
+                                                "Location": "{{25.location}}"
+                                            },
+                                            "metadata": {
+                                                "designer": {
+                                                    "x": 553,
+                                                    "y": 350
+                                                },
+                                                "restore": {
+                                                    "extra": {
+                                                        "feeder": {
+                                                            "label": "Google Calendar - Search Events [25]"
+                                                        }
+                                                    },
+                                                    "parameters": {
+                                                        "type": {
+                                                            "label": "My data structure"
+                                                        },
+                                                        "space": {
+                                                            "label": "Empty"
+                                                        }
+                                                    }
+                                                },
+                                                "parameters": [
+                                                    {
+                                                        "name": "type",
+                                                        "type": "udt",
+                                                        "label": "Data structure",
+                                                        "required": true
+                                                    },
+                                                    {
+                                                        "name": "space",
+                                                        "type": "select",
+                                                        "label": "Indentation",
+                                                        "validate": {
+                                                            "enum": [
+                                                                "tab",
+                                                                "2",
+                                                                "4"
+                                                            ]
+                                                        }
+                                                    }
+                                                ],
+                                                "expect": [
+                                                    {
+                                                        "name": "Summary",
+                                                        "type": "text",
+                                                        "label": null,
+                                                        "required": true
+                                                    },
+                                                    {
+                                                        "name": "Start",
+                                                        "type": "date",
+                                                        "label": null,
+                                                        "required": true
+                                                    },
+                                                    {
+                                                        "name": "End",
+                                                        "type": "date",
+                                                        "label": null,
+                                                        "required": true
+                                                    },
+                                                    {
+                                                        "name": "Location",
+                                                        "type": "text",
+                                                        "label": null
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        {
+                                            "id": 29,
+                                            "module": "gateway:WebhookRespond",
+                                            "version": 1,
+                                            "parameters": {},
+                                            "mapper": {
+                                                "body": "{{27.json}}",
+                                                "status": "200",
+                                                "headers": []
+                                            },
+                                            "metadata": {
+                                                "designer": {
+                                                    "x": 1117,
+                                                    "y": 352
+                                                },
+                                                "restore": {
+                                                    "expect": {
+                                                        "headers": {
+                                                            "mode": "chose"
+                                                        }
+                                                    }
+                                                },
+                                                "expect": [
+                                                    {
+                                                        "name": "status",
+                                                        "type": "uinteger",
+                                                        "label": "Status",
+                                                        "required": true,
+                                                        "validate": {
+                                                            "min": 100
+                                                        }
+                                                    },
+                                                    {
+                                                        "name": "body",
+                                                        "type": "any",
+                                                        "label": "Body"
+                                                    },
+                                                    {
+                                                        "name": "headers",
+                                                        "spec": [
+                                                            {
+                                                                "name": "key",
+                                                                "type": "text",
+                                                                "label": "Key",
+                                                                "required": true,
+                                                                "validate": {
+                                                                    "max": 256
+                                                                }
+                                                            },
+                                                            {
+                                                                "name": "value",
+                                                                "type": "text",
+                                                                "label": "Value",
+                                                                "required": true,
+                                                                "validate": {
+                                                                    "max": 4096
+                                                                }
+                                                            }
+                                                        ],
+                                                        "type": "array",
+                                                        "label": "Custom headers",
+                                                        "validate": {
+                                                            "maxItems": 16
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    ]
+                                },
+                                {
+                                    "flow": [
+                                        {
+                                            "id": 26,
+                                            "module": "google-calendar:searchEvents",
+                                            "version": 5,
+                                            "parameters": {
+                                                "__IMTCONN__": 941236
+                                            },
+                                            "filter": {
+                                                "name": "Studia",
+                                                "conditions": [
+                                                    [
+                                                        {
+                                                            "a": "{{17.calendar_type}}",
+                                                            "b": "studia",
+                                                            "o": "text:equal"
+                                                        }
+                                                    ]
+                                                ]
+                                            },
+                                            "mapper": {
+                                                "limit": "100",
+                                                "timeMin": "{{17.start_date}}",
+                                                "calendar": "4dedd202605d5977baf77e7cf50bdcb847bc7720a36eec01b7f0fe3855dc9415@group.calendar.google.com",
+                                                "singleEvents": false
+                                            },
+                                            "metadata": {
+                                                "designer": {
+                                                    "x": -79,
+                                                    "y": 637
+                                                },
+                                                "restore": {
+                                                    "expect": {
+                                                        "orderBy": {
+                                                            "mode": "chose",
+                                                            "label": "Empty"
+                                                        },
+                                                        "calendar": {
+                                                            "mode": "chose",
+                                                            "label": "Studia"
+                                                        }
+                                                    },
+                                                    "parameters": {
+                                                        "__IMTCONN__": {
+                                                            "data": {
+                                                                "scoped": "true",
+                                                                "connection": "google"
+                                                            },
+                                                            "label": "My Google connection (kacperwlodarczyk@protonmail.com)"
+                                                        }
+                                                    }
+                                                },
+                                                "parameters": [
+                                                    {
+                                                        "name": "__IMTCONN__",
+                                                        "type": "account:google",
+                                                        "label": "Connection",
+                                                        "required": true
+                                                    }
+                                                ],
+                                                "expect": [
+                                                    {
+                                                        "name": "calendar",
+                                                        "type": "select",
+                                                        "label": "Calendar ID",
+                                                        "required": true
+                                                    },
+                                                    {
+                                                        "name": "timeMin",
+                                                        "time": true,
+                                                        "type": "date",
+                                                        "label": "Start Date"
+                                                    },
+                                                    {
+                                                        "name": "timeMax",
+                                                        "time": true,
+                                                        "type": "date",
+                                                        "label": "End Date"
+                                                    },
+                                                    {
+                                                        "name": "updatedMin",
+                                                        "time": true,
+                                                        "type": "date",
+                                                        "label": "Updated from"
+                                                    },
+                                                    {
+                                                        "name": "singleEvents",
+                                                        "type": "boolean",
+                                                        "label": "Single Events",
+                                                        "required": true
+                                                    },
+                                                    {
+                                                        "name": "q",
+                                                        "type": "text",
+                                                        "label": "Query"
+                                                    },
+                                                    {
+                                                        "name": "orderBy",
+                                                        "type": "select",
+                                                        "label": "Order By",
+                                                        "validate": {
+                                                            "enum": [
+                                                                "startTime",
+                                                                "updated"
+                                                            ]
+                                                        }
+                                                    },
+                                                    {
+                                                        "name": "limit",
+                                                        "type": "uinteger",
+                                                        "label": "Limit"
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        {
+                                            "id": 28,
+                                            "module": "json:AggregateToJSON",
+                                            "version": 1,
+                                            "parameters": {
+                                                "type": 30720,
+                                                "space": "",
+                                                "feeder": 26
+                                            },
+                                            "mapper": {
+                                                "End": "{{26.end}}",
+                                                "Start": "{{26.start}}",
+                                                "Summary": "{{26.summary}}",
+                                                "Location": "{{26.location}}"
+                                            },
+                                            "metadata": {
+                                                "designer": {
+                                                    "x": 584,
+                                                    "y": 636
+                                                },
+                                                "restore": {
+                                                    "extra": {
+                                                        "feeder": {
+                                                            "label": "Google Calendar - Search Events [26]"
+                                                        }
+                                                    },
+                                                    "parameters": {
+                                                        "type": {
+                                                            "label": "My data structure"
+                                                        },
+                                                        "space": {
+                                                            "label": "Empty"
+                                                        }
+                                                    }
+                                                },
+                                                "parameters": [
+                                                    {
+                                                        "name": "type",
+                                                        "type": "udt",
+                                                        "label": "Data structure",
+                                                        "required": true
+                                                    },
+                                                    {
+                                                        "name": "space",
+                                                        "type": "select",
+                                                        "label": "Indentation",
+                                                        "validate": {
+                                                            "enum": [
+                                                                "tab",
+                                                                "2",
+                                                                "4"
+                                                            ]
+                                                        }
+                                                    }
+                                                ],
+                                                "expect": [
+                                                    {
+                                                        "name": "Summary",
+                                                        "type": "text",
+                                                        "label": null,
+                                                        "required": true
+                                                    },
+                                                    {
+                                                        "name": "Start",
+                                                        "type": "date",
+                                                        "label": null,
+                                                        "required": true
+                                                    },
+                                                    {
+                                                        "name": "End",
+                                                        "type": "date",
+                                                        "label": null,
+                                                        "required": true
+                                                    },
+                                                    {
+                                                        "name": "Location",
+                                                        "type": "text",
+                                                        "label": null
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        {
+                                            "id": 30,
+                                            "module": "gateway:WebhookRespond",
+                                            "version": 1,
+                                            "parameters": {},
+                                            "mapper": {
+                                                "body": "{{28.json}}",
+                                                "status": "200",
+                                                "headers": []
+                                            },
+                                            "metadata": {
+                                                "designer": {
+                                                    "x": 1131,
+                                                    "y": 635
+                                                },
+                                                "restore": {
+                                                    "expect": {
+                                                        "headers": {
+                                                            "mode": "chose"
+                                                        }
+                                                    }
+                                                },
+                                                "expect": [
+                                                    {
+                                                        "name": "status",
+                                                        "type": "uinteger",
+                                                        "label": "Status",
+                                                        "required": true,
+                                                        "validate": {
+                                                            "min": 100
+                                                        }
+                                                    },
+                                                    {
+                                                        "name": "body",
+                                                        "type": "any",
+                                                        "label": "Body"
+                                                    },
+                                                    {
+                                                        "name": "headers",
+                                                        "spec": [
+                                                            {
+                                                                "name": "key",
+                                                                "type": "text",
+                                                                "label": "Key",
+                                                                "required": true,
+                                                                "validate": {
+                                                                    "max": 256
+                                                                }
+                                                            },
+                                                            {
+                                                                "name": "value",
+                                                                "type": "text",
+                                                                "label": "Value",
+                                                                "required": true,
+                                                                "validate": {
+                                                                    "max": 4096
+                                                                }
+                                                            }
+                                                        ],
+                                                        "type": "array",
+                                                        "label": "Custom headers",
+                                                        "validate": {
+                                                            "maxItems": 16
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "flow": [
+                        {
+                            "id": 4,
+                            "module": "builtin:BasicRouter",
+                            "version": 1,
+                            "filter": {
+                                "name": "create",
+                                "conditions": [
+                                    [
+                                        {
+                                            "a": "{{17.operation}}",
+                                            "b": "create",
+                                            "o": "text:equal"
+                                        }
+                                    ]
+                                ]
+                            },
+                            "mapper": null,
+                            "metadata": {
+                                "designer": {
+                                    "x": -95,
+                                    "y": -383
+                                }
+                            },
+                            "routes": [
+                                {
+                                    "flow": [
+                                        {
+                                            "id": 5,
+                                            "module": "google-calendar:createAnEvent",
+                                            "version": 5,
+                                            "parameters": {
+                                                "__IMTCONN__": 941236
+                                            },
+                                            "filter": {
+                                                "name": "Praca",
+                                                "conditions": [
+                                                    [
+                                                        {
+                                                            "a": "{{17.calendar_type}}",
+                                                            "b": "praca",
+                                                            "o": "text:equal"
+                                                        }
+                                                    ]
+                                                ]
+                                            },
+                                            "mapper": {
+                                                "end": "{{17.end_date}}",
+                                                "start": "{{17.start_date}}",
+                                                "select": "detail",
+                                                "summary": "{{17.event_name}}",
+                                                "calendar": "53dac8e89a0fb540734763a85f598db17e0b756cb6225fa5656f994fd6cc05d7@group.calendar.google.com",
+                                                "duration": "{{17.duration}}",
+                                                "visibility": "default",
+                                                "allDayEvent": "{{if(17.all_day; false; true)}}",
+                                                "transparency": "opaque",
+                                                "conferenceDate": false,
+                                                "guestsCanModify": false
+                                            },
+                                            "metadata": {
+                                                "designer": {
+                                                    "x": 54,
+                                                    "y": -672
+                                                },
+                                                "restore": {
+                                                    "expect": {
+                                                        "select": {
+                                                            "label": "In Detail"
+                                                        },
+                                                        "colorId": {
+                                                            "mode": "chose"
+                                                        },
+                                                        "calendar": {
+                                                            "mode": "chose",
+                                                            "label": "Praca"
+                                                        },
+                                                        "attendees": {
+                                                            "mode": "chose"
+                                                        },
+                                                        "overrides": {
+                                                            "mode": "chose"
+                                                        },
+                                                        "recurrence": {
+                                                            "mode": "chose"
+                                                        },
+                                                        "visibility": {
+                                                            "mode": "chose",
+                                                            "label": "Default"
+                                                        },
+                                                        "allDayEvent": {
+                                                            "mode": "edit"
+                                                        },
+                                                        "attachments": {
+                                                            "mode": "chose"
+                                                        },
+                                                        "sendUpdates": {
+                                                            "mode": "chose",
+                                                            "label": "Empty"
+                                                        },
+                                                        "transparency": {
+                                                            "mode": "chose",
+                                                            "label": "Busy"
+                                                        },
+                                                        "conferenceDate": {
+                                                            "mode": "chose"
+                                                        }
+                                                    },
+                                                    "parameters": {
+                                                        "__IMTCONN__": {
+                                                            "data": {
+                                                                "scoped": "true",
+                                                                "connection": "google"
+                                                            },
+                                                            "label": "My Google connection (kacperwlodarczyk@protonmail.com)"
+                                                        }
+                                                    }
+                                                },
+                                                "parameters": [
+                                                    {
+                                                        "name": "__IMTCONN__",
+                                                        "type": "account:google",
+                                                        "label": "Connection",
+                                                        "required": true
+                                                    }
+                                                ],
+                                                "expect": [
+                                                    {
+                                                        "name": "select",
+                                                        "type": "select",
+                                                        "label": "Create an Event",
+                                                        "required": true,
+                                                        "validate": {
+                                                            "enum": [
+                                                                "quick",
+                                                                "detail"
+                                                            ]
+                                                        }
+                                                    },
+                                                    {
+                                                        "name": "calendar",
+                                                        "type": "select",
+                                                        "label": "Calendar ID",
+                                                        "required": true
+                                                    },
+                                                    {
+                                                        "name": "colorId",
+                                                        "type": "select",
+                                                        "label": "Color"
+                                                    },
+                                                    {
+                                                        "name": "summary",
+                                                        "type": "text",
+                                                        "label": "Event Name",
+                                                        "required": true
+                                                    },
+                                                    {
+                                                        "name": "allDayEvent",
+                                                        "type": "boolean",
+                                                        "label": "All Day Event",
+                                                        "required": true
+                                                    },
+                                                    {
+                                                        "name": "start",
+                                                        "time": true,
+                                                        "type": "date",
+                                                        "label": "Start Date",
+                                                        "required": true
+                                                    },
+                                                    {
+                                                        "name": "end",
+                                                        "time": true,
+                                                        "type": "date",
+                                                        "label": "End Date"
+                                                    },
+                                                    {
+                                                        "name": "duration",
+                                                        "type": "time",
+                                                        "label": "Duration"
+                                                    },
+                                                    {
+                                                        "name": "description",
+                                                        "type": "text",
+                                                        "label": "Description"
+                                                    },
+                                                    {
+                                                        "name": "location",
+                                                        "type": "text",
+                                                        "label": "Location"
+                                                    },
+                                                    {
+                                                        "name": "useDefault",
+                                                        "type": "boolean",
+                                                        "label": "Use the default reminder settings for this event"
+                                                    },
+                                                    {
+                                                        "name": "overrides",
+                                                        "spec": [
+                                                            {
+                                                                "name": "method",
+                                                                "type": "select",
+                                                                "label": "Method",
+                                                                "options": [
+                                                                    {
+                                                                        "label": "Email",
+                                                                        "value": "email"
+                                                                    },
+                                                                    {
+                                                                        "label": "Pop-up",
+                                                                        "value": "popup"
+                                                                    }
+                                                                ],
+                                                                "required": true
+                                                            },
+                                                            {
+                                                                "name": "minutes",
+                                                                "type": "uinteger",
+                                                                "label": "Minutes",
+                                                                "required": true,
+                                                                "validate": {
+                                                                    "max": 40320
+                                                                }
+                                                            }
+                                                        ],
+                                                        "type": "array",
+                                                        "label": "Reminders",
+                                                        "validate": {
+                                                            "maxItems": 5
+                                                        }
+                                                    },
+                                                    {
+                                                        "name": "attendees",
+                                                        "spec": [
+                                                            {
+                                                                "name": "displayName",
+                                                                "type": "text",
+                                                                "label": "Name"
+                                                            },
+                                                            {
+                                                                "name": "email",
+                                                                "type": "email",
+                                                                "label": "Email",
+                                                                "required": true
+                                                            }
+                                                        ],
+                                                        "type": "array",
+                                                        "label": "Attendees"
+                                                    },
+                                                    {
+                                                        "name": "transparency",
+                                                        "type": "select",
+                                                        "label": "Show me as",
+                                                        "required": true,
+                                                        "validate": {
+                                                            "enum": [
+                                                                "opaque",
+                                                                "transparent"
+                                                            ]
+                                                        }
+                                                    },
+                                                    {
+                                                        "name": "visibility",
+                                                        "type": "select",
+                                                        "label": "Visibility",
+                                                        "required": true,
+                                                        "validate": {
+                                                            "enum": [
+                                                                "default",
+                                                                "public",
+                                                                "private"
+                                                            ]
+                                                        }
+                                                    },
+                                                    {
+                                                        "name": "sendUpdates",
+                                                        "type": "select",
+                                                        "label": "Send notifications about the event creation",
+                                                        "validate": {
+                                                            "enum": [
+                                                                "all",
+                                                                "externalOnly",
+                                                                "none"
+                                                            ]
+                                                        }
+                                                    },
+                                                    {
+                                                        "name": "guestsCanModify",
+                                                        "type": "boolean",
+                                                        "label": "Guests can modify the event",
+                                                        "required": true
+                                                    },
+                                                    {
+                                                        "name": "recurrence",
+                                                        "spec": {
+                                                            "name": "value",
+                                                            "type": "text",
+                                                            "label": "Value"
+                                                        },
+                                                        "type": "array",
+                                                        "label": "Recurrence"
+                                                    },
+                                                    {
+                                                        "name": "conferenceDate",
+                                                        "type": "boolean",
+                                                        "label": "Add Google Meet Video Conferencing",
+                                                        "required": true
+                                                    },
+                                                    {
+                                                        "name": "attachments",
+                                                        "spec": [
+                                                            {
+                                                                "name": "fileUrl",
+                                                                "type": "url",
+                                                                "label": "File URL",
+                                                                "required": true
+                                                            }
+                                                        ],
+                                                        "type": "array",
+                                                        "label": "Attachments"
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    ]
+                                },
+                                {
+                                    "flow": [
+                                        {
+                                            "id": 32,
+                                            "module": "google-calendar:createAnEvent",
+                                            "version": 5,
+                                            "parameters": {
+                                                "__IMTCONN__": 941236
+                                            },
+                                            "filter": {
+                                                "name": "Studia",
+                                                "conditions": [
+                                                    [
+                                                        {
+                                                            "a": "{{17.calendar_type}}",
+                                                            "b": "studia",
+                                                            "o": "text:equal"
+                                                        }
+                                                    ]
+                                                ]
+                                            },
+                                            "mapper": {
+                                                "end": "{{17.end_date}}",
+                                                "start": "{{17.start_date}}",
+                                                "select": "detail",
+                                                "summary": "{{17.event_name}}",
+                                                "calendar": "4dedd202605d5977baf77e7cf50bdcb847bc7720a36eec01b7f0fe3855dc9415@group.calendar.google.com",
+                                                "duration": "{{17.duration}}",
+                                                "visibility": "default",
+                                                "allDayEvent": "{{if(17.all_day; false; true)}}",
+                                                "transparency": "opaque",
+                                                "conferenceDate": false,
+                                                "guestsCanModify": false
+                                            },
+                                            "metadata": {
+                                                "designer": {
+                                                    "x": 272,
+                                                    "y": -490
+                                                },
+                                                "restore": {
+                                                    "expect": {
+                                                        "select": {
+                                                            "label": "In Detail"
+                                                        },
+                                                        "colorId": {
+                                                            "mode": "chose"
+                                                        },
+                                                        "calendar": {
+                                                            "mode": "chose",
+                                                            "label": "Studia"
+                                                        },
+                                                        "attendees": {
+                                                            "mode": "chose"
+                                                        },
+                                                        "overrides": {
+                                                            "mode": "chose"
+                                                        },
+                                                        "recurrence": {
+                                                            "mode": "chose"
+                                                        },
+                                                        "visibility": {
+                                                            "mode": "chose",
+                                                            "label": "Default"
+                                                        },
+                                                        "allDayEvent": {
+                                                            "mode": "edit"
+                                                        },
+                                                        "attachments": {
+                                                            "mode": "chose"
+                                                        },
+                                                        "sendUpdates": {
+                                                            "mode": "chose",
+                                                            "label": "Empty"
+                                                        },
+                                                        "transparency": {
+                                                            "mode": "chose",
+                                                            "label": "Busy"
+                                                        },
+                                                        "conferenceDate": {
+                                                            "mode": "chose"
+                                                        }
+                                                    },
+                                                    "parameters": {
+                                                        "__IMTCONN__": {
+                                                            "data": {
+                                                                "scoped": "true",
+                                                                "connection": "google"
+                                                            },
+                                                            "label": "My Google connection (kacperwlodarczyk@protonmail.com)"
+                                                        }
+                                                    }
+                                                },
+                                                "parameters": [
+                                                    {
+                                                        "name": "__IMTCONN__",
+                                                        "type": "account:google",
+                                                        "label": "Connection",
+                                                        "required": true
+                                                    }
+                                                ],
+                                                "expect": [
+                                                    {
+                                                        "name": "select",
+                                                        "type": "select",
+                                                        "label": "Create an Event",
+                                                        "required": true,
+                                                        "validate": {
+                                                            "enum": [
+                                                                "quick",
+                                                                "detail"
+                                                            ]
+                                                        }
+                                                    },
+                                                    {
+                                                        "name": "calendar",
+                                                        "type": "select",
+                                                        "label": "Calendar ID",
+                                                        "required": true
+                                                    },
+                                                    {
+                                                        "name": "colorId",
+                                                        "type": "select",
+                                                        "label": "Color"
+                                                    },
+                                                    {
+                                                        "name": "summary",
+                                                        "type": "text",
+                                                        "label": "Event Name",
+                                                        "required": true
+                                                    },
+                                                    {
+                                                        "name": "allDayEvent",
+                                                        "type": "boolean",
+                                                        "label": "All Day Event",
+                                                        "required": true
+                                                    },
+                                                    {
+                                                        "name": "start",
+                                                        "time": true,
+                                                        "type": "date",
+                                                        "label": "Start Date",
+                                                        "required": true
+                                                    },
+                                                    {
+                                                        "name": "end",
+                                                        "time": true,
+                                                        "type": "date",
+                                                        "label": "End Date"
+                                                    },
+                                                    {
+                                                        "name": "duration",
+                                                        "type": "time",
+                                                        "label": "Duration"
+                                                    },
+                                                    {
+                                                        "name": "description",
+                                                        "type": "text",
+                                                        "label": "Description"
+                                                    },
+                                                    {
+                                                        "name": "location",
+                                                        "type": "text",
+                                                        "label": "Location"
+                                                    },
+                                                    {
+                                                        "name": "useDefault",
+                                                        "type": "boolean",
+                                                        "label": "Use the default reminder settings for this event"
+                                                    },
+                                                    {
+                                                        "name": "overrides",
+                                                        "spec": [
+                                                            {
+                                                                "name": "method",
+                                                                "type": "select",
+                                                                "label": "Method",
+                                                                "options": [
+                                                                    {
+                                                                        "label": "Email",
+                                                                        "value": "email"
+                                                                    },
+                                                                    {
+                                                                        "label": "Pop-up",
+                                                                        "value": "popup"
+                                                                    }
+                                                                ],
+                                                                "required": true
+                                                            },
+                                                            {
+                                                                "name": "minutes",
+                                                                "type": "uinteger",
+                                                                "label": "Minutes",
+                                                                "required": true,
+                                                                "validate": {
+                                                                    "max": 40320
+                                                                }
+                                                            }
+                                                        ],
+                                                        "type": "array",
+                                                        "label": "Reminders",
+                                                        "validate": {
+                                                            "maxItems": 5
+                                                        }
+                                                    },
+                                                    {
+                                                        "name": "attendees",
+                                                        "spec": [
+                                                            {
+                                                                "name": "displayName",
+                                                                "type": "text",
+                                                                "label": "Name"
+                                                            },
+                                                            {
+                                                                "name": "email",
+                                                                "type": "email",
+                                                                "label": "Email",
+                                                                "required": true
+                                                            }
+                                                        ],
+                                                        "type": "array",
+                                                        "label": "Attendees"
+                                                    },
+                                                    {
+                                                        "name": "transparency",
+                                                        "type": "select",
+                                                        "label": "Show me as",
+                                                        "required": true,
+                                                        "validate": {
+                                                            "enum": [
+                                                                "opaque",
+                                                                "transparent"
+                                                            ]
+                                                        }
+                                                    },
+                                                    {
+                                                        "name": "visibility",
+                                                        "type": "select",
+                                                        "label": "Visibility",
+                                                        "required": true,
+                                                        "validate": {
+                                                            "enum": [
+                                                                "default",
+                                                                "public",
+                                                                "private"
+                                                            ]
+                                                        }
+                                                    },
+                                                    {
+                                                        "name": "sendUpdates",
+                                                        "type": "select",
+                                                        "label": "Send notifications about the event creation",
+                                                        "validate": {
+                                                            "enum": [
+                                                                "all",
+                                                                "externalOnly",
+                                                                "none"
+                                                            ]
+                                                        }
+                                                    },
+                                                    {
+                                                        "name": "guestsCanModify",
+                                                        "type": "boolean",
+                                                        "label": "Guests can modify the event",
+                                                        "required": true
+                                                    },
+                                                    {
+                                                        "name": "recurrence",
+                                                        "spec": {
+                                                            "name": "value",
+                                                            "type": "text",
+                                                            "label": "Value"
+                                                        },
+                                                        "type": "array",
+                                                        "label": "Recurrence"
+                                                    },
+                                                    {
+                                                        "name": "conferenceDate",
+                                                        "type": "boolean",
+                                                        "label": "Add Google Meet Video Conferencing",
+                                                        "required": true
+                                                    },
+                                                    {
+                                                        "name": "attachments",
+                                                        "spec": [
+                                                            {
+                                                                "name": "fileUrl",
+                                                                "type": "url",
+                                                                "label": "File URL",
+                                                                "required": true
+                                                            }
+                                                        ],
+                                                        "type": "array",
+                                                        "label": "Attachments"
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    ]
+                                },
+                                {
+                                    "flow": [
+                                        {
+                                            "id": 33,
+                                            "module": "google-calendar:createAnEvent",
+                                            "version": 5,
+                                            "parameters": {
+                                                "__IMTCONN__": 941236
+                                            },
+                                            "filter": {
+                                                "name": "Osobiste",
+                                                "conditions": [
+                                                    [
+                                                        {
+                                                            "a": "{{17.calendar_type}}",
+                                                            "b": "osobiste",
+                                                            "o": "text:equal"
+                                                        }
+                                                    ]
+                                                ]
+                                            },
+                                            "mapper": {
+                                                "end": "{{17.end_date}}",
+                                                "start": "{{17.start_date}}",
+                                                "select": "detail",
+                                                "summary": "{{17.event_name}}",
+                                                "calendar": "a6b2348ed56e57bf221e524ae3483eefb569e50ad24d8e9c984c53c74951b029@group.calendar.google.com",
+                                                "duration": "{{17.duration}}",
+                                                "visibility": "default",
+                                                "allDayEvent": "{{if(17.all_day; false; true)}}",
+                                                "transparency": "opaque",
+                                                "conferenceDate": false,
+                                                "guestsCanModify": false
+                                            },
+                                            "metadata": {
+                                                "designer": {
+                                                    "x": 289,
+                                                    "y": -240
+                                                },
+                                                "restore": {
+                                                    "expect": {
+                                                        "select": {
+                                                            "label": "In Detail"
+                                                        },
+                                                        "colorId": {
+                                                            "mode": "chose"
+                                                        },
+                                                        "calendar": {
+                                                            "mode": "chose",
+                                                            "label": "Osobiste"
+                                                        },
+                                                        "attendees": {
+                                                            "mode": "chose"
+                                                        },
+                                                        "overrides": {
+                                                            "mode": "chose"
+                                                        },
+                                                        "recurrence": {
+                                                            "mode": "chose"
+                                                        },
+                                                        "visibility": {
+                                                            "mode": "chose",
+                                                            "label": "Default"
+                                                        },
+                                                        "allDayEvent": {
+                                                            "mode": "edit"
+                                                        },
+                                                        "attachments": {
+                                                            "mode": "chose"
+                                                        },
+                                                        "sendUpdates": {
+                                                            "mode": "chose",
+                                                            "label": "Empty"
+                                                        },
+                                                        "transparency": {
+                                                            "mode": "chose",
+                                                            "label": "Busy"
+                                                        },
+                                                        "conferenceDate": {
+                                                            "mode": "chose"
+                                                        }
+                                                    },
+                                                    "parameters": {
+                                                        "__IMTCONN__": {
+                                                            "data": {
+                                                                "scoped": "true",
+                                                                "connection": "google"
+                                                            },
+                                                            "label": "My Google connection (kacperwlodarczyk@protonmail.com)"
+                                                        }
+                                                    }
+                                                },
+                                                "parameters": [
+                                                    {
+                                                        "name": "__IMTCONN__",
+                                                        "type": "account:google",
+                                                        "label": "Connection",
+                                                        "required": true
+                                                    }
+                                                ],
+                                                "expect": [
+                                                    {
+                                                        "name": "select",
+                                                        "type": "select",
+                                                        "label": "Create an Event",
+                                                        "required": true,
+                                                        "validate": {
+                                                            "enum": [
+                                                                "quick",
+                                                                "detail"
+                                                            ]
+                                                        }
+                                                    },
+                                                    {
+                                                        "name": "calendar",
+                                                        "type": "select",
+                                                        "label": "Calendar ID",
+                                                        "required": true
+                                                    },
+                                                    {
+                                                        "name": "colorId",
+                                                        "type": "select",
+                                                        "label": "Color"
+                                                    },
+                                                    {
+                                                        "name": "summary",
+                                                        "type": "text",
+                                                        "label": "Event Name",
+                                                        "required": true
+                                                    },
+                                                    {
+                                                        "name": "allDayEvent",
+                                                        "type": "boolean",
+                                                        "label": "All Day Event",
+                                                        "required": true
+                                                    },
+                                                    {
+                                                        "name": "start",
+                                                        "time": true,
+                                                        "type": "date",
+                                                        "label": "Start Date",
+                                                        "required": true
+                                                    },
+                                                    {
+                                                        "name": "end",
+                                                        "time": true,
+                                                        "type": "date",
+                                                        "label": "End Date"
+                                                    },
+                                                    {
+                                                        "name": "duration",
+                                                        "type": "time",
+                                                        "label": "Duration"
+                                                    },
+                                                    {
+                                                        "name": "description",
+                                                        "type": "text",
+                                                        "label": "Description"
+                                                    },
+                                                    {
+                                                        "name": "location",
+                                                        "type": "text",
+                                                        "label": "Location"
+                                                    },
+                                                    {
+                                                        "name": "useDefault",
+                                                        "type": "boolean",
+                                                        "label": "Use the default reminder settings for this event"
+                                                    },
+                                                    {
+                                                        "name": "overrides",
+                                                        "spec": [
+                                                            {
+                                                                "name": "method",
+                                                                "type": "select",
+                                                                "label": "Method",
+                                                                "options": [
+                                                                    {
+                                                                        "label": "Email",
+                                                                        "value": "email"
+                                                                    },
+                                                                    {
+                                                                        "label": "Pop-up",
+                                                                        "value": "popup"
+                                                                    }
+                                                                ],
+                                                                "required": true
+                                                            },
+                                                            {
+                                                                "name": "minutes",
+                                                                "type": "uinteger",
+                                                                "label": "Minutes",
+                                                                "required": true,
+                                                                "validate": {
+                                                                    "max": 40320
+                                                                }
+                                                            }
+                                                        ],
+                                                        "type": "array",
+                                                        "label": "Reminders",
+                                                        "validate": {
+                                                            "maxItems": 5
+                                                        }
+                                                    },
+                                                    {
+                                                        "name": "attendees",
+                                                        "spec": [
+                                                            {
+                                                                "name": "displayName",
+                                                                "type": "text",
+                                                                "label": "Name"
+                                                            },
+                                                            {
+                                                                "name": "email",
+                                                                "type": "email",
+                                                                "label": "Email",
+                                                                "required": true
+                                                            }
+                                                        ],
+                                                        "type": "array",
+                                                        "label": "Attendees"
+                                                    },
+                                                    {
+                                                        "name": "transparency",
+                                                        "type": "select",
+                                                        "label": "Show me as",
+                                                        "required": true,
+                                                        "validate": {
+                                                            "enum": [
+                                                                "opaque",
+                                                                "transparent"
+                                                            ]
+                                                        }
+                                                    },
+                                                    {
+                                                        "name": "visibility",
+                                                        "type": "select",
+                                                        "label": "Visibility",
+                                                        "required": true,
+                                                        "validate": {
+                                                            "enum": [
+                                                                "default",
+                                                                "public",
+                                                                "private"
+                                                            ]
+                                                        }
+                                                    },
+                                                    {
+                                                        "name": "sendUpdates",
+                                                        "type": "select",
+                                                        "label": "Send notifications about the event creation",
+                                                        "validate": {
+                                                            "enum": [
+                                                                "all",
+                                                                "externalOnly",
+                                                                "none"
+                                                            ]
+                                                        }
+                                                    },
+                                                    {
+                                                        "name": "guestsCanModify",
+                                                        "type": "boolean",
+                                                        "label": "Guests can modify the event",
+                                                        "required": true
+                                                    },
+                                                    {
+                                                        "name": "recurrence",
+                                                        "spec": {
+                                                            "name": "value",
+                                                            "type": "text",
+                                                            "label": "Value"
+                                                        },
+                                                        "type": "array",
+                                                        "label": "Recurrence"
+                                                    },
+                                                    {
+                                                        "name": "conferenceDate",
+                                                        "type": "boolean",
+                                                        "label": "Add Google Meet Video Conferencing",
+                                                        "required": true
+                                                    },
+                                                    {
+                                                        "name": "attachments",
+                                                        "spec": [
+                                                            {
+                                                                "name": "fileUrl",
+                                                                "type": "url",
+                                                                "label": "File URL",
+                                                                "required": true
+                                                            }
+                                                        ],
+                                                        "type": "array",
+                                                        "label": "Attachments"
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "metadata": {
+        "instant": true,
+        "version": 1,
+        "scenario": {
+            "roundtrips": 1,
+            "maxErrors": 3,
+            "autoCommit": true,
+            "autoCommitTriggerLast": true,
+            "sequential": false,
+            "confidential": false,
+            "dataloss": false,
+            "dlq": false,
+            "freshVariables": false
+        },
+        "designer": {
+            "orphans": []
+        },
+        "zone": "eu2.make.com"
+    }
+}
