@@ -11,7 +11,7 @@ from integration.notion import notion
 from services import notion as ns
 from sqlalchemy.orm import Session
 from schemas.notion import NotionCreateSchema, NotionUpdateSchema
-from datetime import datetime, timezone
+from datetime import timezone
 
 
 router = APIRouter(
@@ -57,7 +57,7 @@ def run_embedding_chat():
 @router.post("/notion")
 def run_notion(db: Session = Depends(get_db)):
     """
-    Endpoint to load all databases into vector db
+    Endpoint to load and update data from Notion to SQLite
     """
     for dbs in settings.NOTION_DATABASES:
         parsed_pages = notion(dbs=dbs)
@@ -77,9 +77,8 @@ def run_notion(db: Session = Depends(get_db)):
                             )
                         )
                     else:
-                        print(f"Skipping update for page {page.page_id}")
+                        print(f"Skip update for page {page.page_id}")
                         continue
-
                 else:
                     ns.create_notion_object(
                         db,
@@ -90,7 +89,21 @@ def run_notion(db: Session = Depends(get_db)):
                         )
                     )
 
-                # chunks = split_files(data=content)
-                # save_to_pinecone(chunks)
+    return {"message": "Update completed"}
+
+
+@router.post("/notion/embedding")
+def run_notion_embedding(db: Session = Depends(get_db)):
+    """
+    Endpoint to load and update data from Notion to SQLite
+    """
+    notion_objects = ns.get_all_notion_objects(db)
+    for notion_object in notion_objects:
+        if notion_object.embedded_at is None or notion_object.embedded_at < notion_object.updated_at:
+            chunks = split_files(data=notion_object.content)
+            save_to_pinecone(chunks)
+        else:
+            print(f"Skip embedding for page {notion_object.page_id}")
+            continue
 
     return {"message": "Embedding completed"}

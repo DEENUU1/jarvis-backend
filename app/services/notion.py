@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
 from schemas.notion import NotionSchema, NotionCreateSchema, NotionUpdateSchema, NotionEmbeddUpdateSchema
-from typing import Type
+from typing import Type, List
 from config.database import NotFoundError
 from models.notion import Notion
 
@@ -18,6 +18,11 @@ def get_notion_object_by_page_id(session: Session, page_id: str) -> Type[NotionS
     notion = session.query(Notion).filter_by(page_id=page_id).first()
     if not notion:
         raise NotFoundError(f"Notion object with page_id={page_id} does not exists")
+    return notion
+
+
+def get_all_notion_objects(session: Session) -> List[Type[NotionSchema]]:
+    notion = session.query(Notion).all()
     return notion
 
 
