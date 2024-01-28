@@ -13,7 +13,7 @@ from config.settings import settings
 from .llm import get_chat_openai
 from .memory import setup_memory
 from .prompt import prompt
-from .tools import news, today
+from .tools import news, today, notion
 from .vector import get_pinecone
 
 langchain.debug = True
@@ -43,6 +43,7 @@ def setup_agent(session_id: str, model: str) -> AgentExecutor:
         #     func=google_calendar_list_event.run,
         #     description="Useful for when you need to answer questions about events from Google calendar"
         # ),
+        notion.NotionNoteCreateTool(),
         today.CurrentTimeTool(),
         news.NewsTool(),
         Tool(

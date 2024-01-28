@@ -53,5 +53,7 @@ class Settings(BaseSettings):
 
     GOOGLE_CALENDAR_DEBUG: bool = os.getenv("GOOGLE_CALENDAR_DEBUG") == "True"
 
+    MAKE_NOTION_CREATE_NOTE: Optional[str] = os.getenv("MAKE_NOTION_CREATE_NOTE")
+
 
 settings = Settings()
