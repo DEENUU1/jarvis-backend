@@ -38,6 +38,7 @@ def setup_agent(session_id: str, model: str) -> AgentExecutor:
 
     tools = [
         google_calendar.GoogleCalendarCreateEventTool(),
+        google_calendar.GoogleCalendarListEventTool(),
         notion.NotionNoteCreateTool(),
         today.CurrentTimeTool(),
         news.NewsTool(),

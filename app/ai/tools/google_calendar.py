@@ -14,15 +14,15 @@ class GoogleCalendarCreateEventInput(BaseModel):
     )
     event_name: str = Field(description="Name of the event")
     all_day: bool = Field(description="If event is all day")
-    start_date: str = Field(description="Start date of the event in format 'YYYY-MM-DD HH:MM' or 'YYYY-MM-DD'")
-    end_date: Optional[str] = Field(description="End date of the event in format 'YYYY-MM-DD HH:MM' or 'YYYY-MM-DD'")
+    start_date: str = Field(description="Start date of the event in format 'YYYY/MM/DD HH:MM' or 'YYYY/MM/DD'")
+    end_date: Optional[str] = Field(description="End date of the event in format 'YYYY/MM/DD HH:MM' or 'YYYY/MM/DD'")
     duration: Optional[str] = Field(
         description="Duration of the event in format HH:mm use only when user gives use duration of an event"
     )
 
 
 class GoogleCalendarListEventInput(BaseModel):
-    start_date: str = Field(description="Start date of the event in format 'YYYY-MM-DD'")
+    start_date: str = Field(description="Start date of the event in format 'YYYY/MM/DD'")
 
 
 class GoogleCalendarCreateEventTool(BaseTool):
@@ -87,7 +87,7 @@ class GoogleCalendarListEventTool(BaseTool):
                     "operation": "list"  # Hard coded value based on routing in make.com,
                 }
             )
-            result.append(response.json())
+            result.append(response.text)
 
         return result
 
