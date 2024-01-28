@@ -1,7 +1,9 @@
+from typing import Type
+
 import requests
 from langchain_core.tools import BaseTool
 from pydantic import BaseModel, Field
-from typing import Type
+
 from config.settings import settings
 
 

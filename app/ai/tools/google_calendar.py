@@ -24,20 +24,28 @@ class GoogleCalendarCreateEventInput(BaseModel):
 
 class GoogleCalendarCreateEventTool(BaseTool):
     name = "google_calendar_create_event_tool"
-    description = "Useful when you need to create event in Google Calendar "
+    description = "Useful when you need to create event in Google Calendar, use current_time_tool to get current date"
     args_schema: Type[BaseModel] = GoogleCalendarCreateEventInput
 
-    def _run(self, content: str):
+    def _run(
+            self,
+            calendar_type: str,
+            event_name: str,
+            all_day: bool,
+            start_date: str,
+            end_date: Optional[str] = None,
+            duration: Optional[str] = None
+    ):
         try:
             return requests.post(
                 settings.MAKE_GOOGLE_CALENDAR_CREATE_EVENT,
                 data={
-                    "calendar_type": self.args_schema.calendar_type,
-                    "event_name": self.args_schema.event_name,
-                    "all_day": self.args_schema.all_day,
-                    "start_date": self.args_schema.start_date,
-                    "end_date": self.args_schema.end_date,
-                    "duration": self.args_schema.duration,
+                    "calendar_type": calendar_type,
+                    "event_name": event_name,
+                    "all_day": all_day,
+                    "start_date": start_date,
+                    "end_date": end_date,
+                    "duration": duration,
                 }
             )
         except Exception as e:

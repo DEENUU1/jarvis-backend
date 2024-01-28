@@ -13,7 +13,7 @@ from config.settings import settings
 from .llm import get_chat_openai
 from .memory import setup_memory
 from .prompt import prompt
-from .tools import news, today, notion
+from .tools import news, today, notion, google_calendar
 from .vector import get_pinecone
 
 langchain.debug = True
@@ -22,7 +22,6 @@ langchain.debug = True
 def setup_agent(session_id: str, model: str) -> AgentExecutor:
     llm = get_chat_openai(model=model)
     duckduck_search = DuckDuckGoSearchAPIWrapper()
-    # _, memory = setup_memory(session_id=session_id)
     memory = setup_memory(session_id=session_id)
 
     personal_data = RetrievalQA.from_chain_type(
@@ -38,11 +37,7 @@ def setup_agent(session_id: str, model: str) -> AgentExecutor:
     wikipedia = WikipediaQueryRun(api_wrapper=WikipediaAPIWrapper())
 
     tools = [
-        # Tool(
-        #     name="GoogleCalendarListEvent",
-        #     func=google_calendar_list_event.run,
-        #     description="Useful for when you need to answer questions about events from Google calendar"
-        # ),
+        google_calendar.GoogleCalendarCreateEventTool(),
         notion.NotionNoteCreateTool(),
         today.CurrentTimeTool(),
         news.NewsTool(),
