@@ -6,6 +6,7 @@ import requests
 from pydantic import Json, BaseModel
 
 from config.settings import settings
+from datetime import datetime
 
 
 class Data(BaseModel):
@@ -123,6 +124,15 @@ class DatabaseParser(Parser):
         return result
 
 
+class PageContent(BaseModel):
+    """
+    Model for storing Notion page content.
+    """
+    content: Optional[str] = None
+    updated_at: datetime
+    page_id: str
+
+
 class PageParser(Parser):
     """
     Concrete class for parsing Notion page responses.
@@ -160,7 +170,7 @@ class PageParser(Parser):
 
         return text
 
-    def parse(self, data: Data) -> Optional[str]:
+    def parse(self, data: Data) -> Optional[PageContent]:
         """
         Parses Notion page data and returns the concatenated text.
         """
@@ -185,10 +195,14 @@ class PageParser(Parser):
         if self.debug:
             print(text)
 
-        return text
+        return PageContent(
+            content=text,
+            updated_at=results[0].get("last_edited_time", None),
+            page_id=results[0].get("id", None)
+        )
 
 
-def notion(dbs: str) -> List[Optional[str]]:
+def notion(dbs: str) -> List[Optional[PageContent]]:
     """
     Retrieves and parses Notion data for a given category and database.
 
