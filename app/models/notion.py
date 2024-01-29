@@ -1,6 +1,5 @@
 from config.database import Base
 from sqlalchemy import Column, String, DateTime
-from datetime import timezone
 
 
 class Notion(Base):

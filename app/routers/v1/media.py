@@ -1,18 +1,14 @@
 import os
 import shutil
+from typing import Dict, Any
 
-from fastapi import APIRouter, Depends, File, UploadFile, Response, status
-from config.database import get_db
-from services.chat import get_all_conversations
+from fastapi import APIRouter, Depends, File, UploadFile, Response, status, BackgroundTasks
+from sqlalchemy.orm import Session
+
 from ai.vector import save_to_pinecone
 from ai.vector import split_files
-from config.settings import settings
-from integration.notion import notion
-from services import notion as ns
-from sqlalchemy.orm import Session
-from schemas.notion import NotionCreateSchema, NotionUpdateSchema
-from datetime import timezone
-
+from config.database import get_db
+from tasks.media import chat_history_embedding_task, fetch_notion_task, notion_embedding_task
 
 router = APIRouter(
     prefix="/media",
@@ -24,9 +20,8 @@ router = APIRouter(
     "/file",
     summary="Upload file",
     status_code=status.HTTP_201_CREATED,
-    response_class=Response,
 )
-def upload_file(uploaded_file: UploadFile = File(...)):
+def upload_file(uploaded_file: UploadFile = File(...)) -> Dict[str, str] | Any:
     """
     Endpoint for uploading a file, processing its content, and saving it to Pinecone.
     """
@@ -43,89 +38,49 @@ def upload_file(uploaded_file: UploadFile = File(...)):
     save_to_pinecone(chunks)
     os.remove(path)
 
-    return Response(content="File uploaded and processed", status_code=201)
+    return {"message": "File uploaded successfully"}
 
 
 @router.post(
     "/chat",
     summary="Embedding chat",
     status_code=status.HTTP_201_CREATED,
-    response_class=Response
+    response_model=Dict[str, str]
 )
-def run_embedding_chat() -> Response:
+def run_embedding_chat(background_task: BackgroundTasks) -> Dict[str, str]:
     """
     Load all conversations and messages, split into chunks and load to pinecone vector db
     """
-    conversations = get_all_conversations()
-    for conversation in conversations:
-        chunks = split_files(data=conversation)
-        save_to_pinecone(chunks)
+    background_task.add_task(chat_history_embedding_task)
 
-    return Response(content="Embedding completed", status_code=201)
+    return {"message": "Embedding chat"}
 
 
 @router.post(
     "/notion",
     summary="Update Notion data",
     status_code=status.HTTP_201_CREATED,
-    response_class=Response,
+    response_model=Dict[str, str],
 )
-def run_notion(db: Session = Depends(get_db)) -> Response:
+def run_notion(background_task: BackgroundTasks, db: Session = Depends(get_db)) -> Dict[str, str]:
     """
     Endpoint to load and update data from Notion to SQLite
     """
-    for dbs in settings.NOTION_DATABASES:
-        parsed_pages = notion(dbs=dbs)
-        for page in parsed_pages:
-            if page:
-                if ns.notion_object_exist(db, page_id=page.page_id):
-                    existing_object = ns.get_notion_object_by_page_id(db, page_id=page.page_id)
-                    existing_object_updated_at = existing_object.updated_at.replace(tzinfo=timezone.utc)
+    background_task.add_task(fetch_notion_task, db)
 
-                    if existing_object_updated_at < page.updated_at:
-                        ns.update_notion_content(
-                            session=db,
-                            page_id=page.page_id,
-                            data=NotionUpdateSchema(
-                                updated_at=page.updated_at,
-                                content=page.content,
-                            )
-                        )
-                    else:
-                        continue
-                else:
-                    ns.create_notion_object(
-                        db,
-                        NotionCreateSchema(
-                            page_id=page.page_id,
-                            updated_at=page.updated_at,
-                            content=page.content,
-                        )
-                    )
-
-    return Response(content="Notion data updated", status_code=201)
+    return {"message": "Notion data updated"}
 
 
 @router.post(
     "/notion/embedding",
     summary="Update Notion data",
     status_code=status.HTTP_201_CREATED,
-    response_class=Response
+    response_model=Dict[str, str]
 )
-def run_notion_embedding(db: Session = Depends(get_db)) -> Response:
+def run_notion_embedding(background_task: BackgroundTasks, db: Session = Depends(get_db)) -> Dict[str, str]:
     """
     Endpoint to load and update data from Notion to SQLite
     """
-    notion_objects = ns.get_all_notion_objects(db)
-    for notion_object in notion_objects:
-        if notion_object.embedded_at is None or notion_object.embedded_at < notion_object.updated_at:
-            chunks = split_files(data=notion_object.content)
-            save_to_pinecone(chunks)
-            ns.update_notion_embedding(
-                session=db,
-                page_id=notion_object.page_id
-            )
-        else:
-            continue
+    background_task.add_task(notion_embedding_task, db)
 
-    return Response(content="Notion data updated", status_code=201)
+    return {"message": "Notion data updated"}

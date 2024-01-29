@@ -1,6 +1,6 @@
-from fastapi import APIRouter, status
 from typing import Dict
 
+from fastapi import APIRouter, status
 
 router = APIRouter(
     prefix="",
@@ -15,4 +15,4 @@ router = APIRouter(
     status_code=status.HTTP_200_OK
 )
 def health():
-    return {"status": "okk"}
+    return {"status": "ok"}

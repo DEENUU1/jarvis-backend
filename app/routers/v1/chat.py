@@ -1,13 +1,13 @@
 from typing import List, Optional, Dict
 
 from fastapi import APIRouter, status
+from fastapi.responses import JSONResponse
 
 from ai.agent import setup_agent
-from services.chat import CustomSQLChatMessageHistory
 from config.settings import settings
 from schemas.message import Message
+from services.chat import CustomSQLChatMessageHistory
 from utils.session import generate_unique_session
-from fastapi.responses import JSONResponse
 
 router = APIRouter(
     prefix="/chat",
