@@ -1,7 +1,7 @@
 import os
 import shutil
 
-from fastapi import APIRouter, Depends, File, UploadFile, Response
+from fastapi import APIRouter, Depends, File, UploadFile, Response, status
 from config.database import get_db
 from services.chat import get_all_conversations
 from ai.vector import save_to_pinecone
@@ -20,7 +20,12 @@ router = APIRouter(
 )
 
 
-@router.post("/file")
+@router.post(
+    "/file",
+    summary="Upload file",
+    status_code=status.HTTP_201_CREATED,
+    response_class=Response,
+)
 def upload_file(uploaded_file: UploadFile = File(...)):
     """
     Endpoint for uploading a file, processing its content, and saving it to Pinecone.
@@ -38,11 +43,16 @@ def upload_file(uploaded_file: UploadFile = File(...)):
     save_to_pinecone(chunks)
     os.remove(path)
 
-    return {"message": "Embedding completed"}
+    return Response(content="File uploaded and processed", status_code=201)
 
 
-@router.post("/chat")
-def run_embedding_chat():
+@router.post(
+    "/chat",
+    summary="Embedding chat",
+    status_code=status.HTTP_201_CREATED,
+    response_class=Response
+)
+def run_embedding_chat() -> Response:
     """
     Load all conversations and messages, split into chunks and load to pinecone vector db
     """
@@ -51,11 +61,16 @@ def run_embedding_chat():
         chunks = split_files(data=conversation)
         save_to_pinecone(chunks)
 
-    return {"message": "Embedding completed"}
+    return Response(content="Embedding completed", status_code=201)
 
 
-@router.post("/notion")
-def run_notion(db: Session = Depends(get_db)):
+@router.post(
+    "/notion",
+    summary="Update Notion data",
+    status_code=status.HTTP_201_CREATED,
+    response_class=Response,
+)
+def run_notion(db: Session = Depends(get_db)) -> Response:
     """
     Endpoint to load and update data from Notion to SQLite
     """
@@ -77,7 +92,6 @@ def run_notion(db: Session = Depends(get_db)):
                             )
                         )
                     else:
-                        print(f"Skip update for page {page.page_id}")
                         continue
                 else:
                     ns.create_notion_object(
@@ -89,11 +103,16 @@ def run_notion(db: Session = Depends(get_db)):
                         )
                     )
 
-    return {"message": "Update completed"}
+    return Response(content="Notion data updated", status_code=201)
 
 
-@router.post("/notion/embedding")
-def run_notion_embedding(db: Session = Depends(get_db)):
+@router.post(
+    "/notion/embedding",
+    summary="Update Notion data",
+    status_code=status.HTTP_201_CREATED,
+    response_class=Response
+)
+def run_notion_embedding(db: Session = Depends(get_db)) -> Response:
     """
     Endpoint to load and update data from Notion to SQLite
     """
@@ -106,9 +125,7 @@ def run_notion_embedding(db: Session = Depends(get_db)):
                 session=db,
                 page_id=notion_object.page_id
             )
-            print("Updated")
         else:
-            print(f"Skip embedding for page {notion_object.page_id}")
             continue
 
-    return {"message": "Embedding completed"}
+    return Response(content="Notion data updated", status_code=201)

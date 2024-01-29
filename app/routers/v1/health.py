@@ -1,4 +1,5 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, status
+from typing import Dict
 
 
 router = APIRouter(
@@ -7,6 +8,11 @@ router = APIRouter(
 )
 
 
-@router.get("/health", tags=["health"])
+@router.get(
+    "/",
+    summary="Health check",
+    response_model=Dict[str, str],
+    status_code=status.HTTP_200_OK
+)
 def health():
     return {"status": "okk"}
