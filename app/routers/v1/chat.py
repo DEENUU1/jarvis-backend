@@ -3,7 +3,7 @@ from typing import List, Optional, Dict
 from fastapi import APIRouter
 
 from ai.agent import setup_agent
-from ai.sql_chat_history import CustomSQLChatMessageHistory
+from services.chat import CustomSQLChatMessageHistory
 from config.settings import settings
 from schemas.message import Message
 from utils.session import generate_unique_session

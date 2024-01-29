@@ -1,6 +1,6 @@
 from langchain.memory import ConversationBufferMemory
 
-from .sql_chat_history import CustomSQLChatMessageHistory
+from services.chat import CustomSQLChatMessageHistory
 
 
 # from langchain_core.messages import SystemMessage

@@ -3,7 +3,7 @@ import shutil
 
 from fastapi import APIRouter, Depends, File, UploadFile, Response
 from config.database import get_db
-from ai.sql_chat_history import get_all_conversations
+from services.chat import get_all_conversations
 from ai.vector import save_to_pinecone
 from ai.vector import split_files
 from config.settings import settings
