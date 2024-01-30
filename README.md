@@ -31,6 +31,8 @@ Jarvis consists of 2 repositories:
 - Desktop https://github.com/DEENUU1/jarvis-desktop
 - Core/Backend (current)
 
+<img src="assets/tools.png" alt="jarvis" />
+
 ### System architecture
 <img src="assets/1.png" alt="architecture"/>
 
