@@ -56,7 +56,7 @@ class GoogleCalendarCreateEventTool(BaseTool):
             print(e)
 
     def _arun(self, url: str):
-        raise NotImplementedError("error here")
+        raise NotImplementedError("Not implemented")
 
 
 class GoogleCalendarListEventTool(BaseTool):
@@ -71,7 +71,7 @@ class GoogleCalendarListEventTool(BaseTool):
         return self.get_events_from_all_calendars(start_date=start_date)
 
     def _arun(self, url: str):
-        raise NotImplementedError("error here")
+        raise NotImplementedError("Not implemented")
 
     @staticmethod
     def get_events_from_all_calendars(start_date: str) -> List:
