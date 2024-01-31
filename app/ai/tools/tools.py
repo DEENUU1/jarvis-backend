@@ -29,6 +29,7 @@ def get_tools(llm: ChatOpenAI) -> List[Tool]:
     wikipedia = WikipediaQueryRun(api_wrapper=WikipediaAPIWrapper())
 
     return [
+        google_task.GoogleTaskListTool(),
         google_task.GoogleTaskCreateTool(),
         google_calendar.GoogleCalendarCreateEventTool(),
         google_calendar.GoogleCalendarListEventTool(),
