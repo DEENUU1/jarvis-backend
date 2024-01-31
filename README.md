@@ -54,7 +54,7 @@ Jarvis consists of 2 repositories:
 - Possibility of **voice conversation** with the assistant by using Whisper to transcribe audio into text
 - Ability to convert **text to speech** to read AI responses
 
-<img src="assets/Screenshot_1.png" alt="make"/>
+<img src="assets/google.png" alt="make"/>
 <img src="assets/Screenshot_2.png" alt="make"/>
 
 ## Technologies:
