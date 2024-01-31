@@ -8,7 +8,7 @@ from langchain_community.utilities.duckduckgo_search import DuckDuckGoSearchAPIW
 from langchain_community.utilities.openweathermap import OpenWeatherMapAPIWrapper
 from langchain_core.tools import Tool
 
-from . import google_calendar, news, notion, today
+from . import google_calendar, news, notion, today, google_task
 from ai.vector import get_pinecone
 from config.settings import settings
 
@@ -29,6 +29,7 @@ def get_tools(llm: ChatOpenAI) -> List[Tool]:
     wikipedia = WikipediaQueryRun(api_wrapper=WikipediaAPIWrapper())
 
     return [
+        google_task.GoogleTaskCreateTool(),
         google_calendar.GoogleCalendarCreateEventTool(),
         google_calendar.GoogleCalendarListEventTool(),
         notion.NotionNoteCreateTool(),
