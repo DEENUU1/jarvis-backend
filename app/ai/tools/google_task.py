@@ -27,6 +27,7 @@ class GoogleTaskListTool(BaseTool):
                 settings.MAKE_GOOGLE_CALENDAR_CREATE_LIST_EVENT,
                 data={
                     "start_date": start_date,
+                    "operation": "task_list"
                 }
 
             )
@@ -51,6 +52,7 @@ class GoogleTaskCreateTool(BaseTool):
                 data={
                     "event_name": event_name,
                     "start_date": start_date,
+                    "operation": "task_create"
                 }
             )
         except Exception as e:
